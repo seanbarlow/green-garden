@@ -1,0 +1,12 @@
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\bin\Debug\appsettings.Development.json
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\bin\Debug\appsettings.json
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\bin\Debug\green-garden-server.exe
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\bin\Debug\green-garden-server.dll
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\bin\Debug\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\bin\Debug\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\bin\Debug\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\bin\Debug\Microsoft.OpenApi.dll
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\bin\Debug\green-garden-server.pdb
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\obj\Debug\docker-compose.dcprojAssemblyReference.cache
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\obj\Debug\docker-compose.dcproj.CoreCompileInputs.cache
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\obj\Debug\docker-compose.dcproj.CopyComplete

@@ -1,0 +1,15 @@
+services:
+  green-garden-server:
+    build:
+      context: C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+    image: greengardenserver
+    ports:
+    - target: 80
+    - target: 443
+    volumes:
+    - C:\Users\SeanBarlow\AppData\Roaming\ASP.NET\Https:/root/.aspnet/https:ro
+version: '3.4'

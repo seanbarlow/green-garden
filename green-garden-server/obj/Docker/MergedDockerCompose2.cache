@@ -1,0 +1,38 @@
+services:
+  green-garden-server:
+    build:
+      context: C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server
+      dockerfile: Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: green-garden-server
+      target: base
+    container_name: green-garden-server
+    entrypoint: tail -f /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      DOTNET_USE_POLLING_FILE_WATCHER: '1'
+      NUGET_FALLBACK_PACKAGES: /root/.nuget/fallbackpackages
+    image: greengardenserver:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages
+        --additionalProbingPath /root/.nuget/fallbackpackages  ""'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof
+        dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    ports:
+    - target: 80
+    - target: 443
+    tty: true
+    volumes:
+    - C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server:/app:rw
+    - C:\Users\SeanBarlow\vsdbg\vs2017u5:/remote_debugger:rw
+    - C:\Users\SeanBarlow\AppData\Roaming\ASP.NET\Https:/root/.aspnet/https:ro
+    - C:\Users\SeanBarlow\AppData\Roaming\Microsoft\UserSecrets:/root/.microsoft/usersecrets:ro
+    - C:\Microsoft\Xamarin\NuGet:/root/.nuget/fallbackpackages:ro
+    - C:\Users\SeanBarlow\.nuget\packages:/root/.nuget/packages:ro
+    - C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server:/src:rw
+version: '3.4'

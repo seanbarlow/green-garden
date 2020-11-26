@@ -1,0 +1,19 @@
+<div class="container">
+  <h1>Add Sensor</h1>
+  <form (ngSubmit)="onSubmit()" #f="ngForm" name="sensorForm">
+    <div class="form-group">
+      <label for="sensorTypeId">Sensor Type</label>
+      <select class="form-control" id="sensorTypeId" [(ngModel)]="model.sensorTypeId" name="sensorTypeId"
+        #sensorTypeId="ngModel" required>
+        <option *ngFor="let sensorType of sensorTypes" [value]="sensorType.id">{{sensorType.name}}</option>
+      </select>
+      <div [hidden]="sensorTypeId.valid || sensorTypeId.pristine" class="alert alert-danger">
+        Power is required
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-success" [disabled]="!f.form.valid">Submit</button>
+    &nbsp;
+    <button type="button" class="btn btn-secondary" (click)="cancel();">Clear</button>
+  </form>
+</div>

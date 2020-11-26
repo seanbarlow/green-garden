@@ -1,0 +1,10 @@
+.vs/*
+.vscode/*
+green-garden-server/obj/*
+green-garden-server/bin/*
+.vs/green-garden-server/v16/.suo
+.vscode/arduino.json
+green-garden-server/bin/Debug/net5.0/green-garden-server.dll
+green-garden-server/bin/Debug/net5.0/green-garden-server.pdb
+green-garden-server/bin/Debug/net5.0/ref/green-garden-server.dll
+green-garden-server/obj/project.nuget.cache

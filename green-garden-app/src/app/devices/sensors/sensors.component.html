@@ -1,0 +1,25 @@
+<div class="row">
+    <div class="col-8">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Sensor Type</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Last Update</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let sensor of sensors">
+                    <td>{{sensor.sensorType.name}}</td>
+                    <td>{{sensor.status}}</td>
+                    <td>{{sensor.lastUpdate | date:'medium'}}</td>
+                    <td><a (click)="deleteSensor(sensor.id)" class="nav-link">Delete</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-4" *ngIf="this.deviceId > 0">
+        <gg-add-sensor [deviceId]="this.deviceId" (newSensor)="newSensorHandler($event)"></gg-add-sensor>
+    </div>
+</div>

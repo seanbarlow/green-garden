@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "emuvXRHxOXgkeLaGqobPObzAcp4mRzu5CInO1RBsW7H4eGDiM9u4Ny/TzORJenyGGhxDV5J6Q8X7RzHGIvvlmA==",
+  "dgSpecHash": "q3xcvMjPtXv1cxC1T0lDs0xHdfvmkYYRpC5gBQLLCWR5AMVb01ZRbJ4SOsUTiQ1ZL05C7R/FrTr/Mp8U14yAnA==",
   "success": true,
   "projectFilePath": "C:\\Users\\SeanBarlow\\source\\repos\\green-garden\\green-garden-server\\green-garden-server.csproj",
   "expectedPackageFiles": [
@@ -52,6 +52,7 @@
     "C:\\Users\\SeanBarlow\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.0\\microsoft.netcore.platforms.3.1.0.nupkg.sha512",
     "C:\\Users\\SeanBarlow\\.nuget\\packages\\microsoft.netcore.targets\\1.1.3\\microsoft.netcore.targets.1.1.3.nupkg.sha512",
     "C:\\Users\\SeanBarlow\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
+    "C:\\Users\\SeanBarlow\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.10.9\\microsoft.visualstudio.azure.containers.tools.targets.1.10.9.nupkg.sha512",
     "C:\\Users\\SeanBarlow\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration\\5.0.0\\microsoft.visualstudio.web.codegeneration.5.0.0.nupkg.sha512",
     "C:\\Users\\SeanBarlow\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration.contracts\\5.0.0\\microsoft.visualstudio.web.codegeneration.contracts.5.0.0.nupkg.sha512",
     "C:\\Users\\SeanBarlow\\.nuget\\packages\\microsoft.visualstudio.web.codegeneration.core\\5.0.0\\microsoft.visualstudio.web.codegeneration.core.5.0.0.nupkg.sha512",

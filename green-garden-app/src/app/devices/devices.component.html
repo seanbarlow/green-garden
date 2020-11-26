@@ -1,0 +1,19 @@
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Device Id</th>
+            <th scope="col">
+                <button type="button" class="btn btn-primary" (click)="newDevice()">New Device</button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let device of devices">
+            <th scope="row">{{device.deviceId}}</th>
+            <td><button type="button" class="btn btn-primary" (click)="viewSensors(device.id)">Sensors</button></td>
+        </tr>
+    </tbody>
+</table>
+<div *ngIf="this.deviceId > 0">
+    <gg-sensors  [deviceId]="this.deviceId"></gg-sensors>
+</div>

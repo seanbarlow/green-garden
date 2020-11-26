@@ -1,0 +1,18 @@
+<div class="container">
+    <h1>New Device</h1>
+    <form (ngSubmit)="onSubmit()" #deviceForm="ngForm">
+        <div class="form-group">
+            <label for="deviceId">Device Id</label>
+            <input type="text" class="form-control" id="deviceId" required [(ngModel)]="model.deviceId" name="deviceId"
+                #deviceId="ngModel">
+                <div [hidden]="deviceId.valid || deviceId.pristine" class="alert alert-danger">
+                    Device Id is required.
+                </div>
+        </div>
+   
+        <button type="submit" class="btn btn-success" [disabled]="!deviceForm.form.valid">Submit</button>
+        &nbsp;
+        <button type="button" class="btn btn-secondary" (click)="newDevice(); deviceForm.reset()">New Device</button>
+      </form>
+    </div>
+

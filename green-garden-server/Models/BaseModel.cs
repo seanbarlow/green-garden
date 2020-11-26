@@ -5,12 +5,11 @@ using System.Threading.Tasks;
 
 namespace green_garden_server.Models
 {
-    public class Log
+    public abstract class BaseModel
     {
         public int Id { get; set; }
-        public string DeviceId { get; set; }
-        public string Message { get; set; }
-        public DateTime RecievedDate { get; set; }
-
+        public DateTime Created { get; set; }
+        public DateTime Updated { get; set; }
+        public bool Deleted { get; set; }
     }
 }

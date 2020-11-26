@@ -5,53 +5,47 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using green_garden_server.Data;
 using green_garden_server.Models;
 
-namespace green_garden_server.Data
+namespace green_garden_server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DevicesController : ControllerBase
+    public class LookupController : ControllerBase
     {
         private readonly GreenGardenContext _context;
 
-        public DevicesController(GreenGardenContext context)
+        public LookupController(GreenGardenContext context)
         {
             _context = context;
         }
 
-        // GET: api/Devices
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Device>>> GetDevices()
-        {
-            return await _context.Devices.ToListAsync();
-        }
-
-        // GET: api/Devices/5
+        // GET: api/Lookups/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Device>> GetDevice(int id)
+        public async Task<ActionResult<Lookup>> GetLookup(int id)
         {
-            var device = await _context.Devices.FindAsync(id);
+            var lookup = await _context.Lookups.FindAsync(id);
 
-            if (device == null)
+            if (lookup == null)
             {
                 return NotFound();
             }
 
-            return device;
+            return lookup;
         }
 
-        // PUT: api/Devices/5
+        // PUT: api/Lookups/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDevice(int id, Device device)
+        public async Task<IActionResult> PutLookup(int id, Lookup lookup)
         {
-            if (id != device.Id)
+            if (id != lookup.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(device).State = EntityState.Modified;
+            _context.Entry(lookup).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +53,7 @@ namespace green_garden_server.Data
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!DeviceExists(id))
+                if (!LookupExists(id))
                 {
                     return NotFound();
                 }
@@ -72,36 +66,36 @@ namespace green_garden_server.Data
             return NoContent();
         }
 
-        // POST: api/Devices
+        // POST: api/Lookups
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Device>> PostDevice(Device device)
+        public async Task<ActionResult<Lookup>> PostLookup(Lookup lookup)
         {
-            _context.Devices.Add(device);
+            _context.Lookups.Add(lookup);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDevice", new { id = device.Id }, device);
+            return CreatedAtAction("GetLookup", new { id = lookup.Id }, lookup);
         }
 
-        // DELETE: api/Devices/5
+        // DELETE: api/Lookups/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDevice(int id)
+        public async Task<IActionResult> DeleteLookup(int id)
         {
-            var device = await _context.Devices.FindAsync(id);
-            if (device == null)
+            var lookup = await _context.Lookups.FindAsync(id);
+            if (lookup == null)
             {
                 return NotFound();
             }
 
-            _context.Devices.Remove(device);
+            _context.Lookups.Remove(lookup);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool DeviceExists(int id)
+        private bool LookupExists(int id)
         {
-            return _context.Devices.Any(e => e.Id == id);
+            return _context.Lookups.Any(e => e.Id == id);
         }
     }
 }

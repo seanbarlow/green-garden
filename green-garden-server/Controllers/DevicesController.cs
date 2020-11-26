@@ -12,47 +12,47 @@ namespace green_garden_server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LogsController : ControllerBase
+    public class DevicesController : ControllerBase
     {
         private readonly GreenGardenContext _context;
 
-        public LogsController(GreenGardenContext context)
+        public DevicesController(GreenGardenContext context)
         {
             _context = context;
         }
 
-        // GET: api/Logs
+        // GET: api/Devices
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Log>>> GetLogs()
+        public async Task<ActionResult<IEnumerable<Device>>> GetDevices()
         {
-            return await _context.Logs.ToListAsync();
+            return await _context.Devices.ToListAsync();
         }
 
-        // GET: api/Logs/5
+        // GET: api/Devices/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Log>> GetLog(int id)
+        public async Task<ActionResult<Device>> GetDevice(int id)
         {
-            var log = await _context.Logs.FindAsync(id);
+            var device = await _context.Devices.FindAsync(id);
 
-            if (log == null)
+            if (device == null)
             {
                 return NotFound();
             }
 
-            return log;
+            return device;
         }
 
-        // PUT: api/Logs/5
+        // PUT: api/Devices/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutLog(int id, Log log)
+        public async Task<IActionResult> PutDevice(int id, Device device)
         {
-            if (id != log.Id)
+            if (id != device.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(log).State = EntityState.Modified;
+            _context.Entry(device).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace green_garden_server.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!LogExists(id))
+                if (!DeviceExists(id))
                 {
                     return NotFound();
                 }
@@ -73,36 +73,36 @@ namespace green_garden_server.Controllers
             return NoContent();
         }
 
-        // POST: api/Logs
+        // POST: api/Devices
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Log>> PostLog(Log log)
+        public async Task<ActionResult<Device>> PostDevice(Device device)
         {
-            _context.Logs.Add(log);
+            _context.Devices.Add(device);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetLog", new { id = log.Id }, log);
+            return CreatedAtAction("GetDevice", new { id = device.Id }, device);
         }
 
-        // DELETE: api/Logs/5
+        // DELETE: api/Devices/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLog(int id)
+        public async Task<IActionResult> DeleteDevice(int id)
         {
-            var log = await _context.Logs.FindAsync(id);
-            if (log == null)
+            var device = await _context.Devices.FindAsync(id);
+            if (device == null)
             {
                 return NotFound();
             }
 
-            _context.Logs.Remove(log);
+            _context.Devices.Remove(device);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool LogExists(int id)
+        private bool DeviceExists(int id)
         {
-            return _context.Logs.Any(e => e.Id == id);
+            return _context.Devices.Any(e => e.Id == id);
         }
     }
 }

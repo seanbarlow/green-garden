@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using green_garden_server.Data;
+using green_garden_server.Events;
+using green_garden_server.Repositories;
+using green_garden_server.Repositories.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -46,6 +49,11 @@ namespace green_garden_server
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "green_garden_server", Version = "v1" });
             });
+
+
+            services.AddScoped<IProccessEvents, EventProcessor>();
+            services.AddScoped<IDeviceRepository, DeviceRepository>();
+            services.AddScoped<ILookupRepository, LookupRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

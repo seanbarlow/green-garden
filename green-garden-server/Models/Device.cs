@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 
 namespace green_garden_server.Models
 {
-    public class Device
+    public class Device : BaseModel
     {
-        public int Id { get; set; }
         public string DeviceId { get; set; }
-        public DeviceType DeviceType { get; set; }
+        public ICollection<DeviceEvent> Events { get; set; }
+        public ICollection<Sensor> Sensors { get; set; }
+        public ICollection<Command> Commands { get; set; }
     }
 }
 

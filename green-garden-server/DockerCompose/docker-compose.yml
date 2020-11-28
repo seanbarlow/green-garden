@@ -1,9 +1,0 @@
-version: '3.4'
-
-services:
-  green-garden-server:
-    image: ${DOCKER_REGISTRY-}greengardenserver
-    build:
-      context: .
-      dockerfile: Dockerfile
-

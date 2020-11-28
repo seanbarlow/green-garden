@@ -11,6 +11,8 @@ namespace green_garden_server.Models.Configuration
         public override void Configure(EntityTypeBuilder<Lookup> builder)
         {
             base.Configure(builder);
+            builder.Property(x => x.Id)
+                .ValueGeneratedNever();
             builder.Property(p => p.Name)
                 .IsRequired();
             builder.Property(p => p.Description)

@@ -10,5 +10,6 @@ namespace green_garden_server.Repositories.Interfaces
     {
         Task<Device> FindByUniqueIdAsync(string deviceId);
         Task<Command> GetNextDeviceActionAsync(string deviceId);
+        Task AddEventAsync(DeviceEvent newDeviceMessage);
     }
 }

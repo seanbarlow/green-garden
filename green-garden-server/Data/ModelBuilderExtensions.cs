@@ -13,10 +13,30 @@ namespace green_garden_server.Data
         public static void Seed(this ModelBuilder modelBuilder)
         {
             LookupTypeSeeder.Seed(modelBuilder);
-            DeviceTypeSeeder.Seed(modelBuilder);
-            MessageTypeSeeder.Seed(modelBuilder);
+            SensorTypeSeeder.Seed(modelBuilder);
             EventTypeSeeder.Seed(modelBuilder);
             ActionTypeSeeder.Seed(modelBuilder);
+
+            modelBuilder.Entity<Device>().HasData(
+                new Device
+                {
+                    Id = 1,
+                    DeviceId = "green-garden-controller"
+                });
+
+            modelBuilder.Entity<Sensor>().HasData(
+                new Sensor
+                {
+                    Id = 1,
+                    DeviceId = 1,
+                    SensorTypeId = 100
+                },
+                new Sensor
+                {
+                    Id = 2,
+                    DeviceId = 1,
+                    SensorTypeId = 101
+                });
         }
     }
 }

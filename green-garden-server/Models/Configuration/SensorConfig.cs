@@ -14,7 +14,7 @@ namespace green_garden_server.Models.Configuration
             base.Configure(builder);
             builder.Property(p => p.LastUpdate)
                     .IsRequired()
-                    .HasColumnType("Date")
+                    .HasColumnType("datetime2")
                     .HasDefaultValueSql("GetDate()");
         }
     }

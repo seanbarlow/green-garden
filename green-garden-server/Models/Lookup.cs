@@ -7,6 +7,7 @@ namespace green_garden_server.Models
 {
     public class Lookup : BaseModel
     {
+        public string UniqueId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int LookupTypeId { get; set; }

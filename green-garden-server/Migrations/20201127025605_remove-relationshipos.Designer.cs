@@ -10,8 +10,8 @@ using green_garden_server.Data;
 namespace green_garden_server.Migrations
 {
     [DbContext(typeof(GreenGardenContext))]
-    [Migration("20201126143345_added-commands-and-actions")]
-    partial class addedcommandsandactions
+    [Migration("20201127025605_remove-relationshipos")]
+    partial class removerelationshipos
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,8 +28,8 @@ namespace green_garden_server.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("ActionTypeId")
-                        .HasColumnType("int");
+                    b.Property<string>("ActionType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
@@ -45,10 +45,12 @@ namespace green_garden_server.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Minutes")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
-                    b.Property<int>("SensorId")
-                        .HasColumnType("int");
+                    b.Property<string>("SensorType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Sent")
                         .ValueGeneratedOnAdd()
@@ -62,11 +64,7 @@ namespace green_garden_server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActionTypeId");
-
                     b.HasIndex("DeviceId");
-
-                    b.HasIndex("SensorId");
 
                     b.ToTable("Commands");
                 });
@@ -100,6 +98,16 @@ namespace green_garden_server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Devices");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DeviceId = "green-garden-controller",
+                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("green_garden_server.Models.DeviceEvent", b =>
@@ -109,8 +117,8 @@ namespace green_garden_server.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("ActionTypeId")
-                        .HasColumnType("int");
+                    b.Property<string>("ActionType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
@@ -129,11 +137,11 @@ namespace green_garden_server.Migrations
                     b.Property<int>("DeviceId")
                         .HasColumnType("int");
 
-                    b.Property<int>("EventTypeId")
-                        .HasColumnType("int");
+                    b.Property<string>("EventType")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SensorTypeId")
-                        .HasColumnType("int");
+                    b.Property<string>("SensorType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Updated")
                         .ValueGeneratedOnAdd()
@@ -142,23 +150,15 @@ namespace green_garden_server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActionTypeId");
-
                     b.HasIndex("DeviceId");
 
-                    b.HasIndex("EventTypeId");
-
-                    b.HasIndex("SensorTypeId");
-
-                    b.ToTable("DeviceEvent");
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("green_garden_server.Models.Lookup", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
@@ -181,6 +181,9 @@ namespace green_garden_server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UniqueId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("Updated")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("Date")
@@ -195,192 +198,167 @@ namespace green_garden_server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 7,
+                            Id = 100,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             Description = "Pump",
-                            LookupTypeId = 2,
+                            LookupTypeId = 1,
                             Name = "Pump",
+                            UniqueId = "pump",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 8,
+                            Id = 101,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             Description = "Light",
-                            LookupTypeId = 2,
+                            LookupTypeId = 1,
                             Name = "Light",
+                            UniqueId = "light",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 9,
+                            Id = 102,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             Description = "pH Meter",
-                            LookupTypeId = 2,
+                            LookupTypeId = 1,
                             Name = "pH Meter",
+                            UniqueId = "phmeter",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 10,
+                            Id = 103,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             Description = "Fan",
-                            LookupTypeId = 2,
+                            LookupTypeId = 1,
                             Name = "Fan",
+                            UniqueId = "fan",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 11,
+                            Id = 104,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             Description = "Water Level",
-                            LookupTypeId = 2,
+                            LookupTypeId = 1,
                             Name = "Water Level",
+                            UniqueId = "waterlevel",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 12,
+                            Id = 105,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             Description = "Humidity",
-                            LookupTypeId = 2,
+                            LookupTypeId = 1,
                             Name = "Humidity",
+                            UniqueId = "humidity",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 13,
+                            Id = 106,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             Description = "Temperature",
+                            LookupTypeId = 1,
+                            Name = "Temperature",
+                            UniqueId = "temperature",
+                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            Description = "The sensor sent an update",
                             LookupTypeId = 2,
-                            Name = "Temerature",
+                            Name = "Update Event",
+                            UniqueId = "update",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 14,
+                            Id = 21,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
-                            Description = "Reading",
-                            LookupTypeId = 3,
-                            Name = "Reading",
+                            Description = "A sensor setting has changed.",
+                            LookupTypeId = 2,
+                            Name = "Change Event",
+                            UniqueId = "change",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 15,
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted = false,
-                            Description = "Value",
-                            LookupTypeId = 3,
-                            Name = "Value",
-                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted = false,
-                            Description = "Status",
-                            LookupTypeId = 3,
-                            Name = "Status",
-                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted = false,
-                            Description = "Event",
-                            LookupTypeId = 3,
-                            Name = "Event",
-                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted = false,
-                            Description = "The sensor is updating us with its status",
-                            LookupTypeId = 5,
-                            Name = "update",
-                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted = false,
-                            Description = "The sensor has changed its status",
-                            LookupTypeId = 5,
-                            Name = "change",
-                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 25,
+                            Id = 300,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             Description = "On",
-                            LookupTypeId = 6,
-                            Name = "on",
+                            LookupTypeId = 3,
+                            Name = "On",
+                            UniqueId = "on",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 26,
+                            Id = 301,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             Description = "Off",
-                            LookupTypeId = 6,
-                            Name = "off",
+                            LookupTypeId = 3,
+                            Name = "Off",
+                            UniqueId = "off",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 27,
+                            Id = 302,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
-                            Description = "lightonseconds",
-                            LookupTypeId = 6,
-                            Name = "lightonseconds",
+                            Description = "Seconds the light is on for",
+                            LookupTypeId = 3,
+                            Name = "Light on Seconds",
+                            UniqueId = "lightonseconds",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 28,
+                            Id = 303,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
-                            Description = "lightoffseconds",
-                            LookupTypeId = 6,
-                            Name = "lightoffseconds",
+                            Description = "Seconds the light is off",
+                            LookupTypeId = 3,
+                            Name = "Light of Seconds",
+                            UniqueId = "lightoffseconds",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 29,
+                            Id = 304,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
-                            Description = "pumponseconds",
-                            LookupTypeId = 6,
-                            Name = "pumponseconds",
+                            Description = "Seconds the Pump is on",
+                            LookupTypeId = 3,
+                            Name = "Pump on Seconds",
+                            UniqueId = "pumponseconds",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = 30,
+                            Id = 305,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
-                            Description = "pumpoffseconds",
-                            LookupTypeId = 6,
-                            Name = "pumpoffseconds",
+                            Description = "Seconds the pump is off",
+                            LookupTypeId = 3,
+                            Name = "Pump off Seconds",
+                            UniqueId = "pumpoffseconds",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -428,7 +406,7 @@ namespace green_garden_server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 2,
+                            Id = 1,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             Description = "The type of sensors we are monitoring and controlling",
@@ -438,27 +416,7 @@ namespace green_garden_server.Migrations
                         },
                         new
                         {
-                            Id = 3,
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted = false,
-                            Description = "Type of message we recieved.",
-                            Name = "Message Types",
-                            UniqueId = "messagetypes",
-                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Deleted = false,
-                            Description = "Type of data we are dealing with",
-                            Name = "Data Types",
-                            UniqueId = "datatypes",
-                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 5,
+                            Id = 2,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             Description = "Event Type from devices",
@@ -468,7 +426,7 @@ namespace green_garden_server.Migrations
                         },
                         new
                         {
-                            Id = 6,
+                            Id = 3,
                             Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Deleted = false,
                             Description = "Action Type from devices",
@@ -521,68 +479,50 @@ namespace green_garden_server.Migrations
                     b.HasIndex("SensorTypeId");
 
                     b.ToTable("Sensors");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DeviceId = 1,
+                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            SensorTypeId = 100,
+                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            DeviceId = 1,
+                            LastUpdate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            SensorTypeId = 101,
+                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("green_garden_server.Models.Command", b =>
                 {
-                    b.HasOne("green_garden_server.Models.Lookup", "ActionType")
-                        .WithMany()
-                        .HasForeignKey("ActionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("green_garden_server.Models.Device", "Device")
                         .WithMany("Commands")
                         .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("green_garden_server.Models.Sensor", "Sensor")
-                        .WithMany()
-                        .HasForeignKey("SensorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ActionType");
 
                     b.Navigation("Device");
-
-                    b.Navigation("Sensor");
                 });
 
             modelBuilder.Entity("green_garden_server.Models.DeviceEvent", b =>
                 {
-                    b.HasOne("green_garden_server.Models.Lookup", "ActionType")
-                        .WithMany()
-                        .HasForeignKey("ActionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("green_garden_server.Models.Device", "Device")
                         .WithMany("Events")
                         .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("green_garden_server.Models.Lookup", "EventType")
-                        .WithMany()
-                        .HasForeignKey("EventTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("green_garden_server.Models.Lookup", "SensorType")
-                        .WithMany()
-                        .HasForeignKey("SensorTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ActionType");
 
                     b.Navigation("Device");
-
-                    b.Navigation("EventType");
-
-                    b.Navigation("SensorType");
                 });
 
             modelBuilder.Entity("green_garden_server.Models.Lookup", b =>

@@ -15,10 +15,18 @@ namespace green_garden_server.Repositories
         {
         }
 
+        public async Task AddEventAsync(DeviceEvent newDeviceMessage)
+        {
+            await _context.Events.AddAsync(newDeviceMessage);
+        }
+
         public async Task<Device> FindByUniqueIdAsync(string deviceId)
         {
             return await _context.Devices
                 .Include(d => d.Commands)
+                .Include(d => d.Events)
+                .Include(x => x.Sensors)
+                    .ThenInclude(x => x.SensorType)
                 .SingleAsync(e => e.DeviceId == deviceId);
         }
 

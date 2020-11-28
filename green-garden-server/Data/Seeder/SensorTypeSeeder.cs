@@ -7,58 +7,65 @@ using System.Threading.Tasks;
 
 namespace green_garden_server.Data.Seeder
 {
-    public class DeviceTypeSeeder
+    public class SensorTypeSeeder
     {
         public static void Seed(ModelBuilder modelBuilder)
         {
-            // Device Type - id: 2
+            // Sensor Type - id: 2
             modelBuilder.Entity<Lookup>().HasData(
                 new Lookup
                 {
-                    Id = 7,
-                    LookupTypeId = 2,
+                    Id = 100,
+                    LookupTypeId = 1,
+                    UniqueId = "pump",
                     Name = "Pump",
                     Description = "Pump"
                 }, new Lookup
                 {
-                    Id = 8,
-                    LookupTypeId = 2,
+                    Id = 101,
+                    LookupTypeId = 1,
+                    UniqueId = "light",
                     Name = "Light",
                     Description = "Light"
                 },
                 new Lookup
                 {
-                    Id = 9,
-                    LookupTypeId = 2,
+                    Id = 102,
+                    LookupTypeId = 1,
+                    UniqueId = "phmeter",
                     Name = "pH Meter",
                     Description = "pH Meter"
                 },
                 new Lookup
                 {
-                    Id = 10,
-                    LookupTypeId = 2,
+                    Id = 103,
+                    LookupTypeId = 1,
+                    UniqueId = "fan",
                     Name = "Fan",
                     Description = "Fan"
                 },
                 new Lookup
                 {
-                    Id = 11,
-                    LookupTypeId = 2,
+                    Id = 104,
+                    LookupTypeId = 1,
+                    UniqueId = "waterlevel",
                     Name = "Water Level",
                     Description = "Water Level"
                 },
                 new Lookup
                 {
-                    Id = 12,
-                    LookupTypeId = 2,
+                    Id = 105,
+                    LookupTypeId = 1,
+                    UniqueId = "humidity",
                     Name = "Humidity",
                     Description = "Humidity"
                 },
                 new Lookup
                 {
-                    Id = 13,
-                    LookupTypeId = 2,
-                    Name = "Temerature",
+                    Id = 106,
+                    LookupTypeId = 1,
+                    UniqueId = "temperature",
+                    Name = "Temperature",
                     Description = "Temperature"
                 });
         }

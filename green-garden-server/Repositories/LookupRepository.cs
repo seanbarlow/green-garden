@@ -21,7 +21,7 @@ namespace green_garden_server.Repositories
 
             return await _context.Lookups
                 .Include(x => x.LookupType)
-                .SingleAsync(x => x.LookupType.UniqueId == lookupTypeUniqueId && x.Name == lookupUniqueId);
+                .SingleAsync(x => x.LookupType.UniqueId == lookupTypeUniqueId && x.UniqueId == lookupUniqueId);
         }
     }
 }

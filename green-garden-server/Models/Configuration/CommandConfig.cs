@@ -16,16 +16,9 @@ namespace green_garden_server.Models.Configuration
                 .HasDefaultValue(false);
             builder.Property(x => x.Minutes)
                 .HasDefaultValue(0);
-            builder.HasOne(x => x.ActionType)
-                .WithOne()
-                .OnDelete(DeleteBehavior.NoAction);
             builder.HasOne(x => x.Device)
                 .WithMany(x => x.Commands)
                 .OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(x => x.SensorType)
-                .WithOne()
-                .OnDelete(DeleteBehavior.NoAction);
-
         }
     }
 }

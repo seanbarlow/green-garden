@@ -11,49 +11,55 @@ namespace green_garden_server.Data.Seeder
     {
         public static void Seed(ModelBuilder modelBuidler)
         {
-            //Action Type = 6
+            //Action Type = 3
             modelBuidler.Entity<Lookup>().HasData(
              new Lookup
              {
-                 Id = 25,
-                 LookupTypeId = 6,
-                 Name = "on",
+                 Id = 300,
+                 LookupTypeId = 3,
+                 UniqueId = "on",
+                 Name = "On",
                  Description = "On"
              }
              , new Lookup
              {
-                 Id = 26,
-                 LookupTypeId = 6,
-                 Name = "off",
+                 Id = 301,
+                 LookupTypeId = 3,
+                 UniqueId = "off",
+                 Name = "Off",
                  Description = "Off"
              }
              , new Lookup
              {
-                 Id = 27,
-                 LookupTypeId = 6,
-                 Name = "lightonseconds",
-                 Description = "lightonseconds"
+                 Id = 302,
+                 LookupTypeId = 3,
+                 UniqueId = "lightonseconds",
+                 Name = "Light on Seconds",
+                 Description = "Seconds the light is on for"
              }
              , new Lookup
              {
-                 Id = 28,
-                 LookupTypeId = 6,
-                 Name = "lightoffseconds",
-                 Description = "lightoffseconds"
+                 Id = 303,
+                 LookupTypeId = 3,
+                 UniqueId = "lightoffseconds",
+                 Name = "Light of Seconds",
+                 Description = "Seconds the light is off"
              }
              , new Lookup
              {
-                 Id = 29,
-                 LookupTypeId = 6,
-                 Name = "pumponseconds",
-                 Description = "pumponseconds"
+                 Id = 304,
+                 LookupTypeId = 3,
+                 UniqueId = "pumponseconds",
+                 Name = "Pump on Seconds",
+                 Description = "Seconds the Pump is on"
              }
              , new Lookup
              {
-                 Id = 30,
-                 LookupTypeId = 6,
-                 Name = "pumpoffseconds",
-                 Description = "pumpoffseconds"
+                 Id = 305,
+                 LookupTypeId = 3,
+                 UniqueId = "pumpoffseconds",
+                 Name = "Pump off Seconds",
+                 Description = "Seconds the pump is off"
              });
         }
     }

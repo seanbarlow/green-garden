@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace green_garden_server.Events
+namespace green_garden_server.Messages
 {
-    public class DeviceEvent
+    public class DeviceMessage
     {
         public string DeviceId { get; set; }
         public string EventType { get; set; }

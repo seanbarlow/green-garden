@@ -29,6 +29,7 @@ namespace green_garden_server.Data
 
         public DbSet<Command> Commands { get; set; }
         public DbSet<Device> Devices { get; set; }
+        public DbSet<DeviceEvent> Events { get; set; }
         public DbSet<Lookup> Lookups { get; set; }
         public DbSet<LookupType> LookupTypes { get; set; }
         public DbSet<Sensor> Sensors { get; set; }
@@ -39,9 +40,12 @@ namespace green_garden_server.Data
     {
         public GreenGardenContext CreateDbContext(string[] args)
         {
+            var environmentName =
+                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{environmentName}.json", true)
                 .Build();
             var optionsBuilder = new DbContextOptionsBuilder<GreenGardenContext>();
             var connectionString = configuration.GetConnectionString("GreenGardenConnectionString");

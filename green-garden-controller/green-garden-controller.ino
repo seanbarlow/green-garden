@@ -5,27 +5,44 @@
 
 const char *ssid = "Barlow1977";
 const char *password = "BrynnVan";
-const char *deviceId = "green-garden-controller";
-
+//const char *deviceId = "green-garden-controller-backup";
+const char *deviceId = "veggie-controller";
+// const char *deviceId = "green-garden-controller";
+const String HOST_API = "https://192.168.86.36:32790/api/DeviceMessage";
 namespace timing
 {
   // 1 second
   const long oneSecond = 1000;
+    // five seconds
+  const long fiveSeconds = oneSecond * 5;
+  // ten seconds
+  const long tenSeconds = oneSecond * 10;
+  // fiftenns seconds
+  const long fifteenSeconds = oneSecond * 15;
+  // thirty seconds
+  const long thirtySeconds = oneSecond * 30;
   // one minute
   const long oneMinute = oneSecond * 60;
+  // one minute
+  const long fiveMinutes = oneMinute * 5;
+    // one minute
+  const long thirtyMinutes = oneMinute * 30;
   // 60 minutes
   const long oneHour = oneMinute * 60;
+  // 4 hours
+  const long fourHours = oneHour * 4;
   // 6 hours
   const long sixHours = oneHour * 6;
-  // 14 hours
-  const long eighteenHours = oneHour * 19;
-
+  // 6hours
+  const long eightHours = oneHour * 6;
+  // 16 hours
+  const long sixteenHours = oneHour * 16;
+  // 18 hours
+  const long eighteenHours = oneHour * 18;
   // pump start millis
   unsigned long pumpMillis = 0;
-
   // time since last change (light on/off)
   unsigned long lightMillis = 0;
-
   // Last run
   unsigned long lastRun = 0;
 
@@ -33,8 +50,9 @@ namespace timing
 
 namespace pin
 {
-  const int light = 13;
-  const int pump = 12;
+  const int light = 12;
+  const int pump = 13;
+  const int led = LED_BUILTIN;
 } // namespace pin
 
 namespace sensor
@@ -45,14 +63,32 @@ namespace sensor
 
 namespace config
 {
-  int pumpOnSeconds = timing::oneMinute;
-  int pumpOffSeconds = timing::sixHours;
-  int lightOnSeconds = timing::eighteenHours;
-  int lightOffSeconds = timing::sixHours;
+  long pumpOnSeconds = timing::tenSeconds;
+  long pumpOffSeconds = timing::oneHour;
+  long lightOnSeconds = timing::sixteenHours;
+  long lightOffSeconds = timing::eightHours;
+  long updateDelay = timing::fiveMinutes;
+  long pumpDelay = timing::oneSecond;
 } // namespace config
+
+void setupLed()
+{
+  pinMode(pin::led, OUTPUT);
+}
+
+void ledOn()
+{
+  digitalWrite(pin::led, LOW);
+}
+
+void ledOff()
+{
+  digitalWrite(pin::led, HIGH);
+}
 
 void setupLight()
 {
+  sendMessage("update", "light", "Light is being initialized", "on");
   pinMode(pin::light, OUTPUT);
   // Always try to avoid duplicate code.
   // Instead of writing digitalWrite(pin, LOW) here,
@@ -62,7 +98,7 @@ void setupLight()
 
 void lightOn()
 {
-  digitalWrite(pin::light, LOW);
+  digitalWrite(pin::light, HIGH);
   sensor::lightStatus = true;
   sendMessage("change", "light", "Light has been turned on", "on");
   Serial.println("Light has been turned on");
@@ -70,7 +106,7 @@ void lightOn()
 
 void lightOff()
 {
-  digitalWrite(pin::light, HIGH);
+  digitalWrite(pin::light, LOW);
   sensor::lightStatus = false;
   sendMessage("change", "light", "Light has been turned off", "off");
   Serial.println("Light has been turned off");
@@ -107,6 +143,7 @@ void checkLights(unsigned long currentMillis)
 
 void setupPump()
 {
+  sendMessage("update", "pump", "Pump is being initialized", "off");
   pinMode(pin::pump, OUTPUT);
   // Always try to avoid duplicate code.
   // Instead of writing digitalWrite(pin, LOW) here,
@@ -116,7 +153,7 @@ void setupPump()
 
 void pumpOn()
 {
-  digitalWrite(pin::pump, LOW);
+  digitalWrite(pin::pump, HIGH);
   sensor::pumpStatus = true;
   sendMessage("change", "pump", "Pump has been turned on", "on");
   Serial.println("Pump has been turned on");
@@ -124,7 +161,7 @@ void pumpOn()
 
 void pumpOff()
 {
-  digitalWrite(pin::pump, HIGH);
+  digitalWrite(pin::pump, LOW);
   sensor::pumpStatus = false;
   sendMessage("change", "pump", "Pump has been turned off", "off");
   Serial.println("Pump has been turned off");
@@ -143,7 +180,7 @@ void checkPump(unsigned long currentMillis)
     }
     else
     {
-      sendMessage("update", "pump", "Pump is currently off", "off");
+      sendMessage("update", "pump", "Pump is currently on", "on");
     }
   }
   // pump is off
@@ -156,7 +193,7 @@ void checkPump(unsigned long currentMillis)
     }
     else
     {
-      sendMessage("update", "pump", "Pump is currently on", "on");
+      sendMessage("update", "pump", "Pump is currently off", "off");
     }
   }
 }
@@ -184,7 +221,7 @@ void sendMessage(String eventType, String sensorType, String data, String action
     Serial.print("[HTTP] begin...\n");
     http.useHTTP10(true);
     // configure traged server and url
-    http.begin(client, "https://192.168.86.36:32774/api/Events"); //HTTP
+    http.begin(client, HOST_API); //HTTP
 
     http.addHeader("Content-Type", "application/json");
 
@@ -225,12 +262,12 @@ void sendMessage(String eventType, String sensorType, String data, String action
           }
           else if (actionType == "lightonseconds")
           {
-            int lightOnSeconds = resultDoc["value"].as<int>() * timing::oneMinute;
+            int lightOnSeconds = resultDoc["value"].as<int>() * timing::oneSecond;
             config::lightOnSeconds = lightOnSeconds;
           }
           else if (actionType == "lightoffseconds")
           {
-            int lightoffseconds = resultDoc["value"].as<int>() * timing::oneMinute;
+            int lightoffseconds = resultDoc["value"].as<int>() * timing::oneSecond;
             config::lightOffSeconds = lightoffseconds;
           }
         }
@@ -248,12 +285,12 @@ void sendMessage(String eventType, String sensorType, String data, String action
           }
           if (actionType == "pumponseconds")
           {
-            int pumpOnSeconds = resultDoc["value"].as<int>() * timing::oneMinute;
+            int pumpOnSeconds = resultDoc["value"].as<int>() * timing::oneSecond;
             config::pumpOnSeconds = pumpOnSeconds;
           }
           if (actionType == "pumpoffseconds")
           {
-            int pumpOffSeconds = resultDoc["value"].as<int>() * timing::oneMinute;
+            int pumpOffSeconds = resultDoc["value"].as<int>() * timing::oneSecond;
             config::pumpOffSeconds = pumpOffSeconds;
           }
         }
@@ -280,6 +317,7 @@ void setup()
   }
 
   Serial.println("Initializing..."); //Test the serial monitor
+  setupLed();
   setupLight();
   lightOn();
   setupPump();
@@ -308,7 +346,18 @@ void loop()
   Serial.print("\n");
 
   unsigned long currentMillis = millis();
-  checkLights(currentMillis);
   checkPump(currentMillis);
-  delay(60000);
+  if (!sensor::pumpStatus)
+  {
+    ledOff();
+    Serial.print("Pump Status: False\n");
+    checkLights(currentMillis);
+    delay(config::updateDelay);
+  }
+  else
+  {
+    ledOn();
+    Serial.print("Pump Status: True\n");
+    delay(config::pumpDelay);
+  }
 }

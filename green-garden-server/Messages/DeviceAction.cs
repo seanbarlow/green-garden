@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace green_garden_server.Events
+namespace green_garden_server.Messages
 {
     public class DeviceAction
     {
@@ -13,7 +13,7 @@ namespace green_garden_server.Events
 
         public static DeviceAction CreateAction(Command command)
         {
-            return new DeviceAction { Action = true, ActionType = command.ActionType.Name, SensorType = command.SensorType.Name, Value = command.Minutes };
+            return new DeviceAction { Action = true, ActionType = command.ActionType, SensorType = command.SensorType, Value = command.Minutes };
         }
 
         public static DeviceAction CreateLightsOnAction()

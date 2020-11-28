@@ -14,11 +14,11 @@ namespace green_garden_server.Models.Configuration
             builder.HasKey(o => o.Id);
             builder.Property(t => t.Created)
                     .IsRequired()
-                    .HasColumnType("Date")
+                    .HasColumnType("datetime2")
                     .HasDefaultValueSql("GetDate()");
             builder.Property(t => t.Updated)
                     .IsRequired()
-                    .HasColumnType("Date")
+                    .HasColumnType("datetime2")
                     .HasDefaultValueSql("GetDate()");
             builder.Property(t => t.Deleted)
                 .IsRequired()

@@ -9,12 +9,9 @@ namespace green_garden_server.Models
     {
         public int DeviceId { get; set; }
         public Device Device { get; set; }
-        public Lookup EventType { get; set; }
-        public int EventTypeId { get; set; }
-        public Lookup SensorType { get; set; }
-        public int SensorTypeId { get; set; }
-        public Lookup ActionType { get; set; }
-        public int ActionTypeId { get; set; }
+        public string EventType { get; set; }
+        public string SensorType { get; set; }
+        public string ActionType { get; set; }
         public string Data { get; set; }
     }
 }

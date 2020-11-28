@@ -10,20 +10,22 @@ namespace green_garden_server.Data.Seeder
     {
         public static void Seed(ModelBuilder modelBuilder)
         {
-            // Event Type = 5
+            // Event Type = 2
             modelBuilder.Entity<Lookup>().HasData(
                 new Lookup
                 {
-                    Id = 23,
-                    LookupTypeId = 5,
-                    Name = "update",
-                    Description = "The sensor is updating us with its status"
+                    Id = 20,
+                    LookupTypeId = 2,
+                    UniqueId = "update",
+                    Name = "Update Event",
+                    Description = "The sensor sent an update"
                 }, new Lookup
                 {
-                    Id = 24,
-                    LookupTypeId = 5,
-                    Name = "change",
-                    Description = "The sensor has changed its status"
+                    Id = 21,
+                    LookupTypeId = 2,
+                    UniqueId = "change",
+                    Name = "Change Event",
+                    Description = "A sensor setting has changed."
                 });
         }
     }

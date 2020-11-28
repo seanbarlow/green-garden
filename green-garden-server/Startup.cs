@@ -1,20 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using green_garden_server.Data;
-using green_garden_server.Events;
+using green_garden_server.Messages;
 using green_garden_server.Repositories;
 using green_garden_server.Repositories.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace green_garden_server
@@ -51,7 +44,7 @@ namespace green_garden_server
             });
 
 
-            services.AddScoped<IProccessEvents, EventProcessor>();
+            services.AddScoped<IProcessMessages, MessageProcessor>();
             services.AddScoped<IDeviceRepository, DeviceRepository>();
             services.AddScoped<ILookupRepository, LookupRepository>();
         }

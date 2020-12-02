@@ -18,12 +18,15 @@ namespace green_garden_server.Messages
             this._deviceRepository = deviceRepository;
             this._lookupRepository = lookupRepository;
         }
-        public async Task<DeviceAction> NextActionAsync(string deviceId)
+        public async Task<DeviceAction> NextActionAsync(string deviceId, string sensorType)
         {
-            var command = await this._deviceRepository.GetNextDeviceActionAsync(deviceId);
+            var command = await this._deviceRepository.GetNextDeviceActionAsync(deviceId, sensorType);
 
             if (command != null)
             {
+                command.Sent = true;
+                command.Updated = DateTime.UtcNow;
+                await this._deviceRepository.SaveAsync();
                 return DeviceAction.CreateAction(command);
             }
             return DeviceAction.CreateNoAction();
@@ -52,9 +55,9 @@ namespace green_garden_server.Messages
             var newDeviceMessage = new DeviceEvent
             {
                 DeviceId = device.Id,
-                EventType = eventType.Name,
-                SensorType = sensor.SensorType.Name,
-                ActionType = actionType.Name,
+                EventType = eventType.UniqueId,
+                SensorType = sensor.SensorType.UniqueId,
+                ActionType = actionType.UniqueId,
                 Data = data
             };
             await _deviceRepository.AddEventAsync(newDeviceMessage);

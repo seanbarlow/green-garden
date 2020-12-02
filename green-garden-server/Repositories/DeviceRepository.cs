@@ -30,13 +30,13 @@ namespace green_garden_server.Repositories
                 .SingleAsync(e => e.DeviceId == deviceId);
         }
 
-        public async Task<Command> GetNextDeviceActionAsync(string deviceId)
+        public async Task<Command> GetNextDeviceActionAsync(string deviceId, string sensorType)
         {
             var device = await _context.Devices
                 .Include(d => d.Commands)
                 .SingleAsync(e => e.DeviceId == deviceId);
             var command = device.Commands
-                .Where(x => !x.Sent)
+                .Where(x => !x.Sent && x.SensorType == sensorType)
                 .OrderBy(x => x.Updated)
                 .FirstOrDefault();
             return command;

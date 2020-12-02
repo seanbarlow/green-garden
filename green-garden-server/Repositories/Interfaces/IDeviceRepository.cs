@@ -9,7 +9,7 @@ namespace green_garden_server.Repositories.Interfaces
     public interface IDeviceRepository : IBaseRepository
     {
         Task<Device> FindByUniqueIdAsync(string deviceId);
-        Task<Command> GetNextDeviceActionAsync(string deviceId);
+        Task<Command> GetNextDeviceActionAsync(string deviceId, string sensorType);
         Task AddEventAsync(DeviceEvent newDeviceMessage);
     }
 }

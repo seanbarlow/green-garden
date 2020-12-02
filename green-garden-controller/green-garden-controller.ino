@@ -3,29 +3,46 @@
 #include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 
+//#define veggie_controller
+#define green_garden_controller
+//#define green_garden_controller_backup
+
+unsigned long currentMillis;
 const char *ssid = "Barlow1977";
 const char *password = "BrynnVan";
-//const char *deviceId = "green-garden-controller-backup";
+
+#ifdef veggie_controller
 const char *deviceId = "veggie-controller";
+#endif
+#ifdef green_garden_controller
+const char *deviceId = "green-garden-controller";
+#endif
+#ifdef green_garden_controller_backup
+const char *deviceId = "green-garden-controller-backup";
+#endif
 // const char *deviceId = "green-garden-controller";
 const String HOST_API = "https://192.168.86.36:32790/api/DeviceMessage";
 namespace timing
 {
   // 1 second
   const long oneSecond = 1000;
-    // five seconds
+  // five seconds
   const long fiveSeconds = oneSecond * 5;
+  // seven seconds
+  const long sevenSeconds = oneSecond * 7;
   // ten seconds
   const long tenSeconds = oneSecond * 10;
   // fiftenns seconds
   const long fifteenSeconds = oneSecond * 15;
+  // twenty seconds
+  const long twentySeconds = oneSecond * 20;
   // thirty seconds
   const long thirtySeconds = oneSecond * 30;
   // one minute
   const long oneMinute = oneSecond * 60;
   // one minute
   const long fiveMinutes = oneMinute * 5;
-    // one minute
+  // one minute
   const long thirtyMinutes = oneMinute * 30;
   // 60 minutes
   const long oneHour = oneMinute * 60;
@@ -55,21 +72,41 @@ namespace pin
   const int led = LED_BUILTIN;
 } // namespace pin
 
-namespace sensor
-{
-  bool lightStatus = false;
-  bool pumpStatus = false;
-} // namespace sensor
-
+#ifdef veggie_controller
 namespace config
 {
   long pumpOnSeconds = timing::tenSeconds;
-  long pumpOffSeconds = timing::oneHour;
+  long pumpOffSeconds = timing::fiveMinutes;
   long lightOnSeconds = timing::sixteenHours;
   long lightOffSeconds = timing::eightHours;
   long updateDelay = timing::fiveMinutes;
   long pumpDelay = timing::oneSecond;
 } // namespace config
+#endif
+
+#ifdef green_garden_controller
+namespace config
+{
+  long pumpOnSeconds = timing::thirtySeconds;
+  long pumpOffSeconds = timing::fourHours;
+  long lightOnSeconds = timing::eighteenHours;
+  long lightOffSeconds = timing::sixHours;
+  long updateDelay = timing::fiveMinutes;
+  long pumpDelay = timing::oneSecond;
+} // namespace config
+#endif
+
+#ifdef green_garden_controller_backup
+namespace config
+{
+  unsigned long pumpOnSeconds = timing::thirtySeconds;
+  unsigned long pumpOffSeconds = timing::fourHours;
+  unsigned long lightOnSeconds = timing::eighteenHours;
+  unsigned long lightOffSeconds = timing::sixHours;
+  unsigned long updateDelay = timing::fiveMinutes;
+  unsigned long pumpDelay = timing::oneSecond;
+} // namespace config
+#endif
 
 void setupLed()
 {
@@ -96,29 +133,55 @@ void setupLight()
   lightOff();
 }
 
+bool lightStatus()
+{
+  return digitalRead(pin::light);
+}
+
 void lightOn()
 {
   digitalWrite(pin::light, HIGH);
-  sensor::lightStatus = true;
-  sendMessage("change", "light", "Light has been turned on", "on");
-  Serial.println("Light has been turned on");
+  //sendMessage("change", "light", "Light has been turned on", "on");
+  Serial.println("\nLight has been turned on\n");
 }
 
 void lightOff()
 {
   digitalWrite(pin::light, LOW);
-  sensor::lightStatus = false;
-  sendMessage("change", "light", "Light has been turned off", "off");
-  Serial.println("Light has been turned off");
+  //sendMessage("change", "light", "Light has been turned off", "off");
+  Serial.println("\nLight has been turned off\n");
 }
 
-void checkLights(unsigned long currentMillis)
+void checkLights()
 {
+  Serial.print("Light Status: ");
+  Serial.print(lightStatus());
+  Serial.print("\n");
+  Serial.print("current :");
+  Serial.print(currentMillis);
+  Serial.print("\n");
+  Serial.print("on :");
+  Serial.print(config::lightOnSeconds);
+  Serial.print("\n");
+  Serial.print("on :");
+  Serial.print(config::lightOffSeconds);
+  Serial.print("\n");
+  Serial.print("light :");
+  Serial.print(timing::lightMillis);
+  Serial.print("\n");
   // check to see if the light is on
-  if (sensor::lightStatus)
+  Serial.print(currentMillis - timing::lightMillis >= config::lightOnSeconds);
+  Serial.print("\n");
+  Serial.print((currentMillis - timing::lightMillis) >= config::lightOffSeconds);
+  Serial.print("\n");
+  Serial.print(currentMillis - timing::lightMillis);
+  Serial.print("\n");
+  if (lightStatus())
   {
-    if (currentMillis - timing::lightMillis >= config::lightOnSeconds)
+    if ((currentMillis - timing::lightMillis) >= config::lightOnSeconds)
     {
+      Serial.print("Calling light off");
+      Serial.print("\n");
       lightOff();
       timing::lightMillis = currentMillis;
     }
@@ -127,10 +190,12 @@ void checkLights(unsigned long currentMillis)
       sendMessage("update", "light", "Light is currently on", "on");
     }
   }
-  else if (!sensor::lightStatus)
+  else
   {
-    if (currentMillis - timing::lightMillis >= config::lightOffSeconds)
+    if ((currentMillis - timing::lightMillis) >= config::lightOffSeconds)
     {
+      Serial.print("Calling light on");
+      Serial.print("\n");
       lightOn();
       timing::lightMillis = currentMillis;
     }
@@ -151,26 +216,45 @@ void setupPump()
   pumpOff();
 }
 
+bool pumpStatus()
+{
+  return digitalRead(pin::pump);
+}
+
 void pumpOn()
 {
+#ifdef green_garden_controller
+  digitalWrite(pin::pump, LOW);
+#endif
+#ifdef green_garden_controller_backup
+  digitalWrite(pin::pump, LOW);
+#endif
+#ifdef veggie_controller
   digitalWrite(pin::pump, HIGH);
-  sensor::pumpStatus = true;
+#endif
   sendMessage("change", "pump", "Pump has been turned on", "on");
   Serial.println("Pump has been turned on");
 }
 
 void pumpOff()
 {
+#ifdef green_garden_controller
+  digitalWrite(pin::pump, HIGH);
+#endif
+#ifdef green_garden_controller_backup
+  digitalWrite(pin::pump, HIGH);
+#endif
+#ifdef veggie_controller
   digitalWrite(pin::pump, LOW);
-  sensor::pumpStatus = false;
+#endif
   sendMessage("change", "pump", "Pump has been turned off", "off");
   Serial.println("Pump has been turned off");
 }
 
-void checkPump(unsigned long currentMillis)
+void checkPump()
 {
   // Pump is on
-  if (sensor::pumpStatus)
+  if (pumpStatus())
   {
     // make sure the pump only runs for 4.5 minutes
     if (currentMillis - timing::pumpMillis >= config::pumpOnSeconds)
@@ -184,7 +268,7 @@ void checkPump(unsigned long currentMillis)
     }
   }
   // pump is off
-  else if (!sensor::pumpStatus)
+  else
   {
     if (currentMillis - timing::pumpMillis >= config::pumpOffSeconds)
     {
@@ -243,22 +327,29 @@ void sendMessage(String eventType, String sensorType, String data, String action
       Serial.print(output);
       Serial.print("\n");
       Serial.print("[HTTP] RESPONSE END\n");
+      http.end();
       bool action = resultDoc["action"].as<bool>();
       if (action)
       {
         String sensorType = resultDoc["sensorType"].as<String>();
+        Serial.print("Sensor Type: ");
+        Serial.print(sensorType);
+        Serial.print("\n");
         String actionType = resultDoc["actionType"].as<String>();
+        Serial.print("Action Type: ");
+        Serial.print(actionType);
+        Serial.print("\n");
         if (sensorType == "light")
         {
-          timing::lightMillis = 0;
-
           if (actionType == "on")
           {
             lightOn();
+            timing::lightMillis = currentMillis;
           }
           else if (actionType == "off")
           {
             lightOff();
+            timing::lightMillis = currentMillis;
           }
           else if (actionType == "lightonseconds")
           {
@@ -273,25 +364,31 @@ void sendMessage(String eventType, String sensorType, String data, String action
         }
         else if (sensorType == "pump")
         {
-          timing::pumpMillis = 0;
-
           if (actionType == "on")
           {
             pumpOn();
+            timing::lightMillis = currentMillis;
           }
           if (actionType == "off")
           {
             pumpOff();
+            timing::lightMillis = currentMillis;
           }
           if (actionType == "pumponseconds")
           {
             int pumpOnSeconds = resultDoc["value"].as<int>() * timing::oneSecond;
             config::pumpOnSeconds = pumpOnSeconds;
+            Serial.print('Updating pump on seconds to: ');
+            Serial.print(config::pumpOnSeconds);
+            Serial.print('\n');
           }
           if (actionType == "pumpoffseconds")
           {
             int pumpOffSeconds = resultDoc["value"].as<int>() * timing::oneSecond;
             config::pumpOffSeconds = pumpOffSeconds;
+            Serial.print('Updating pump off seconds to: ');
+            Serial.print(config::pumpOffSeconds);
+            Serial.print('\n');
           }
         }
       }
@@ -300,7 +397,6 @@ void sendMessage(String eventType, String sensorType, String data, String action
     {
       Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
     }
-    http.end();
   }
 }
 
@@ -327,7 +423,7 @@ void setup()
 void loop()
 {
   Serial.print("Light Status: ");
-  Serial.print(sensor::lightStatus);
+  Serial.print(lightStatus());
   Serial.print("\n");
   Serial.print("Light On Seconds: ");
   Serial.print(config::lightOnSeconds);
@@ -336,7 +432,7 @@ void loop()
   Serial.print(config::lightOffSeconds);
   Serial.print("\n");
   Serial.print("Pump Status: ");
-  Serial.print(sensor::pumpStatus);
+  Serial.print(pumpStatus());
   Serial.print("\n");
   Serial.print("Pump On Seconds: ");
   Serial.print(config::pumpOnSeconds);
@@ -345,13 +441,13 @@ void loop()
   Serial.print(config::pumpOffSeconds);
   Serial.print("\n");
 
-  unsigned long currentMillis = millis();
-  checkPump(currentMillis);
-  if (!sensor::pumpStatus)
+  currentMillis = millis();
+  checkPump();
+  if (!pumpStatus())
   {
     ledOff();
     Serial.print("Pump Status: False\n");
-    checkLights(currentMillis);
+    checkLights();
     delay(config::updateDelay);
   }
   else

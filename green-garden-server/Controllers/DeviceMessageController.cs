@@ -25,7 +25,7 @@ namespace green_garden_server.Controllers
         public async Task<DeviceAction> Post(DeviceMessage deviceEvent)
         {
             await _messageProcessor.ProcessMessageAsync(deviceEvent);
-            return await _messageProcessor.NextActionAsync(deviceEvent.DeviceId);
+            return await _messageProcessor.NextActionAsync(deviceEvent.DeviceId, deviceEvent.SensorType);
         }
     }
 }

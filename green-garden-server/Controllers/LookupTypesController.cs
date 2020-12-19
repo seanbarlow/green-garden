@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using green_garden_server.Data;
 using green_garden_server.Models;
+using green_garden_server.Managers.Interfaces;
 
 namespace green_garden_server.Controllers
 {
@@ -14,30 +15,28 @@ namespace green_garden_server.Controllers
     [ApiController]
     public class LookupTypesController : ControllerBase
     {
-        private readonly GreenGardenContext _context;
+        private readonly ILookupManager _lookupManager;
 
-        public LookupTypesController(GreenGardenContext context)
+        public LookupTypesController(ILookupManager lookupManager)
         {
-            _context = context;
+            _lookupManager = lookupManager;
         }
 
         // GET: api/LookupTypes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LookupType>>> GetLookupTypes()
         {
-            return await _context.LookupTypes.ToListAsync();
+            return (await _lookupManager.GetTypesAsync()).ToList();
         }
         // GET: api/LookupTypes/DeviceType/Lookups
         [HttpGet("{lookupTypeUniqueId}/Lookups")]
-        public async Task<ActionResult<IEnumerable<Lookup>>> GetLookups(string lookupTypeUniqueId)
+        public async Task<ActionResult<IEnumerable<Lookup>>> GetLookupsAsync(string lookupTypeUniqueId)
         {
             lookupTypeUniqueId = lookupTypeUniqueId
                 .Trim()
                 .ToLower()
                 .Replace(" ", "");
-            return await _context.Lookups
-                .Where(x => x.LookupType.UniqueId == lookupTypeUniqueId)
-                .ToListAsync();
+            return (await _lookupManager.GetAllAsync(lookupTypeUniqueId)).ToList();
         }
 
 
@@ -45,7 +44,7 @@ namespace green_garden_server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<LookupType>> GetLookupType(int id)
         {
-            var lookupType = await _context.LookupTypes.FindAsync(id);
+            var lookupType = await _lookupManager.GetTypeAsync(id);
 
             if (lookupType == null)
             {
@@ -65,22 +64,13 @@ namespace green_garden_server.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(lookupType).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _lookupManager.UpdateAsync(lookupType);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!LookupTypeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return NoContent();
@@ -95,31 +85,18 @@ namespace green_garden_server.Controllers
                 .Trim()
                 .ToLower()
                 .Replace(" ", "");
-            _context.LookupTypes.Add(lookupType);
-            await _context.SaveChangesAsync();
+            await _lookupManager.AddAsync(lookupType);
 
-            return CreatedAtAction("GetLookupType", new { id = lookupType.Id }, lookupType);
+            return CreatedAtAction("PostLookupType", new { id = lookupType.Id }, lookupType);
         }
 
         // DELETE: api/LookupTypes/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLookupType(int id)
         {
-            var lookupType = await _context.LookupTypes.FindAsync(id);
-            if (lookupType == null)
-            {
-                return NotFound();
-            }
-
-            _context.LookupTypes.Remove(lookupType);
-            await _context.SaveChangesAsync();
+            await _lookupManager.DeleteAsync(id);
 
             return NoContent();
-        }
-
-        private bool LookupTypeExists(int id)
-        {
-            return _context.LookupTypes.Any(e => e.Id == id);
         }
     }
 }

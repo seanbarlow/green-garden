@@ -13,6 +13,7 @@ import { LookupTypesComponent } from './lookup-types/lookup-types.component';
 import { LookupsComponent } from './lookups/lookups.component';
 import { SensorsComponent } from './devices/sensors/sensors.component';
 import { AddSensorComponent } from './devices/add-sensor/add-sensor.component';
+import { EventsComponent } from './events/events.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { AddSensorComponent } from './devices/add-sensor/add-sensor.component';
     LookupsComponent,
     SensorsComponent,
     AddSensorComponent,
+    EventsComponent,
   ],
   imports: [
     BrowserModule,

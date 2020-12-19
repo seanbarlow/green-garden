@@ -1,4 +1,6 @@
 using green_garden_server.Data;
+using green_garden_server.Managers;
+using green_garden_server.Managers.Interfaces;
 using green_garden_server.Messages;
 using green_garden_server.Repositories;
 using green_garden_server.Repositories.Interfaces;
@@ -43,10 +45,11 @@ namespace green_garden_server
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "green_garden_server", Version = "v1" });
             });
 
-
+            services.AddScoped<ILookupManager, LookupManager>();
             services.AddScoped<IProcessMessages, MessageProcessor>();
             services.AddScoped<IDeviceRepository, DeviceRepository>();
             services.AddScoped<ILookupRepository, LookupRepository>();
+            services.AddScoped<ISensorRepository, SensorRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

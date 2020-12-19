@@ -1,0 +1,24 @@
+<div *ngfor="let event of events">
+    <div class="row">
+        <div class="col-12">
+            {{event.deviceId}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            {{ event.sensorType.name}}
+        </div>
+        <div class="col-3">
+            {{event.lastUpdate}}
+        </div>
+        <div class="col-3">
+            {{ event.eventType.name }}
+        </div>
+        <div class="col-3">
+            {{ event.actionType.name}}
+        </div>
+        <div class="col-3">
+            {{ event.data}}
+        </div>
+    </div>
+</div>

@@ -60,6 +60,27 @@ namespace green_garden_server.Data.Seeder
                  UniqueId = "pumpoffseconds",
                  Name = "Pump off Seconds",
                  Description = "Seconds the pump is off"
+             }, new Lookup
+             {
+                 Id = 306,
+                 LookupTypeId = 3,
+                 UniqueId = "humidity",
+                 Name = "Humidity",
+                 Description = "Humidity"
+             }, new Lookup
+             {
+                 Id = 307,
+                 LookupTypeId = 3,
+                 UniqueId = "temperature",
+                 Name = "Temperature",
+                 Description = "Temperature"
+             }, new Lookup
+             {
+                 Id = 308,
+                 LookupTypeId = 3,
+                 UniqueId = "heatindex",
+                 Name = "Heat Index",
+                 Description = "Heat Index"
              });
         }
     }

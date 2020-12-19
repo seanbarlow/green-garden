@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using green_garden_server.Data;
 using green_garden_server.Models;
+using green_garden_server.Repositories.Interfaces;
 
 namespace green_garden_server.Controllers
 {
@@ -14,29 +15,26 @@ namespace green_garden_server.Controllers
     [ApiController]
     public class SensorsController : ControllerBase
     {
-        private readonly GreenGardenContext _context;
+        private readonly ISensorRepository _sensorsRepository;
 
-        public SensorsController(GreenGardenContext context)
+        public SensorsController(ISensorRepository sensorsRepository)
         {
-            _context = context;
+            _sensorsRepository = sensorsRepository;
         }
 
         // GET: api/Sensors
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Sensor>>> GetSensors(int deviceId)
+        public async Task<ActionResult<IEnumerable<Sensor>>> GetSensorsAsync(int deviceId)
         {
-            return await _context.Sensors
-                .Include(x => x.SensorType)
-                .ToListAsync();
+            var sensors = await this._sensorsRepository.GetAllAsync(deviceId);
+            return sensors.ToList();
         }
 
         // GET: api/Sensors/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Sensor>> GetSensor(int deviceId, int id)
+        public async Task<ActionResult<Sensor>> GetSensorAsync(int deviceId, int id)
         {
-            var sensor = await _context.Sensors
-                .Include(i => i.SensorType)
-                .FirstAsync(x => x.Id == id);
+            var sensor = await _sensorsRepository.GetAsync(deviceId, id);
 
             if (sensor == null)
             {
@@ -49,29 +47,20 @@ namespace green_garden_server.Controllers
         // PUT: api/Sensors/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSensor(int deviceId, int id, Sensor sensor)
+        public async Task<IActionResult> PutSensorAsync(int deviceId, int id, Sensor sensor)
         {
             if (id != sensor.Id)
             {
                 return BadRequest();
             }
-
-            _context.Entry(sensor).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _sensorsRepository.UpdateAsync(sensor);
+                await _sensorsRepository.SaveAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!SensorExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return NoContent();
@@ -80,33 +69,21 @@ namespace green_garden_server.Controllers
         // POST: api/Sensors
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Sensor>> PostSensor(int deviceId, Sensor sensor)
+        public async Task<ActionResult<Sensor>> PostSensorAsync(int deviceId, Sensor sensor)
         {
-            _context.Sensors.Add(sensor);
-            await _context.SaveChangesAsync();
-            await _context.Lookups.SingleAsync(x => x.Id == sensor.SensorTypeId);
+            await _sensorsRepository.AddAsync(sensor);
+            await _sensorsRepository.SaveAsync();
             return CreatedAtAction("GetSensor", new { id = sensor.Id, deviceId = sensor.DeviceId }, sensor);
         }
 
         // DELETE: api/Sensors/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSensor(int deviceId, int id)
+        [HttpDelete("{sensorId}")]
+        public async Task<IActionResult> DeleteSensorAsync(int deviceId, int sensorId)
         {
-            var sensor = await _context.Sensors.FindAsync(id);
-            if (sensor == null)
-            {
-                return NotFound();
-            }
-
-            _context.Sensors.Remove(sensor);
-            await _context.SaveChangesAsync();
+            await _sensorsRepository.DeleteAsync(deviceId, sensorId);
+            await _sensorsRepository.SaveAsync();
 
             return NoContent();
-        }
-
-        private bool SensorExists(int id)
-        {
-            return _context.Sensors.Any(e => e.Id == id);
         }
     }
 }

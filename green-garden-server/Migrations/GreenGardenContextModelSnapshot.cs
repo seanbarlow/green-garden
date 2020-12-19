@@ -358,6 +358,39 @@ namespace green_garden_server.Migrations
                             Name = "Pump off Seconds",
                             UniqueId = "pumpoffseconds",
                             Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 306,
+                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            Description = "Humidity",
+                            LookupTypeId = 3,
+                            Name = "Humidity",
+                            UniqueId = "humidity",
+                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 307,
+                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            Description = "Temperature",
+                            LookupTypeId = 3,
+                            Name = "Temperature",
+                            UniqueId = "temperature",
+                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 308,
+                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Deleted = false,
+                            Description = "Heat Index",
+                            LookupTypeId = 3,
+                            Name = "Heat Index",
+                            UniqueId = "heatindex",
+                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Sensor } from '../../models/sensor.model';
 import { SensorsService } from '../../services/sensors.service';
@@ -8,7 +8,7 @@ import { SensorsService } from '../../services/sensors.service';
   templateUrl: './sensors.component.html',
   styleUrls: ['./sensors.component.sass']
 })
-export class SensorsComponent implements OnInit, OnDestroy {
+export class SensorsComponent implements OnInit, OnDestroy, OnChanges {
   @Input() deviceId: number;
   private sensorsSubscription: Subscription;
   private deleteSubscription: Subscription;
@@ -18,14 +18,33 @@ export class SensorsComponent implements OnInit, OnDestroy {
   constructor(public sensorService: SensorsService) { }
 
   ngOnDestroy(): void {
-    this.sensorsSubscription.unsubscribe();
-    this.deleteSubscription.unsubscribe();
+    if (this.sensorsSubscription) {
+      this.sensorsSubscription.unsubscribe();
+    }
+    if (this.deleteSubscription) {
+      this.deleteSubscription.unsubscribe();
+    }
   }
 
+  
   ngOnInit(): void {
     this.sensorService.configureUrl(this.deviceId);
     this.updateSensors();
   }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('OnChanges');
+    console.log(JSON.stringify(changes));
+
+        for (const propName in changes) {
+          if(propName == 'deviceId'){
+            const change = changes[propName];
+            this.deviceId = change.currentValue
+            this.sensorService.configureUrl(this.deviceId);
+            this.updateSensors();
+          }
+    }
+}
 
   public newSensorHandler(sensor: Sensor): void {
     this.sensors.push(sensor);

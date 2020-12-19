@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using green_garden_server.Models;
-using green_garden_server.Data;
+using green_garden_server.Repositories.Interfaces;
 
 namespace green_garden_server.Controllers
 {
@@ -14,25 +14,25 @@ namespace green_garden_server.Controllers
     [ApiController]
     public class DevicesController : ControllerBase
     {
-        private readonly GreenGardenContext _context;
+        private readonly IDeviceRepository _deviceRepository;
 
-        public DevicesController(GreenGardenContext context)
+        public DevicesController(IDeviceRepository deviceRepository)
         {
-            _context = context;
+            _deviceRepository = deviceRepository;
         }
 
         // GET: api/Devices
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Device>>> GetDevices()
         {
-            return await _context.Devices.ToListAsync();
+            return (await _deviceRepository.GetAllAsync()).ToList();
         }
 
         // GET: api/Devices/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Device>> GetDevice(int id)
         {
-            var device = await _context.Devices.FindAsync(id);
+            var device = await _deviceRepository.GetAsync(id);
 
             if (device == null)
             {
@@ -51,23 +51,14 @@ namespace green_garden_server.Controllers
             {
                 return BadRequest();
             }
-
-            _context.Entry(device).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _deviceRepository.UpdateAsync(device);
+                await _deviceRepository.SaveAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!DeviceExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return NoContent();
@@ -78,8 +69,8 @@ namespace green_garden_server.Controllers
         [HttpPost]
         public async Task<ActionResult<Device>> PostDevice(Device device)
         {
-            _context.Devices.Add(device);
-            await _context.SaveChangesAsync();
+            await _deviceRepository.AddAsync(device);
+            await _deviceRepository.SaveAsync();
 
             return CreatedAtAction("GetDevice", new { id = device.Id }, device);
         }
@@ -88,21 +79,9 @@ namespace green_garden_server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDevice(int id)
         {
-            var device = await _context.Devices.FindAsync(id);
-            if (device == null)
-            {
-                return NotFound();
-            }
-
-            _context.Devices.Remove(device);
-            await _context.SaveChangesAsync();
-
+            await _deviceRepository.DeleteAsync(id);
+            await _deviceRepository.SaveAsync();
             return NoContent();
-        }
-
-        private bool DeviceExists(int id)
-        {
-            return _context.Devices.Any(e => e.Id == id);
         }
     }
 }

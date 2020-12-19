@@ -5,27 +5,27 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using green_garden_server.Data;
 using green_garden_server.Models;
+using green_garden_server.Managers.Interfaces;
 
 namespace green_garden_server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/LookupType/{lookupTypeId}/[controller]")]
     [ApiController]
     public class LookupController : ControllerBase
     {
-        private readonly GreenGardenContext _context;
+        private readonly ILookupManager _lookupManager;
 
-        public LookupController(GreenGardenContext context)
+        public LookupController(ILookupManager lookupManager)
         {
-            _context = context;
+            _lookupManager = lookupManager;
         }
 
         // GET: api/Lookups/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Lookup>> GetLookup(int id)
+        [HttpGet("{lookupId}")]
+        public async Task<ActionResult<Lookup>> GetLookup(int lookupTypeId, int lookupId)
         {
-            var lookup = await _context.Lookups.FindAsync(id);
+            var lookup = await _lookupManager.GetAsync(lookupId);
 
             if (lookup == null)
             {
@@ -37,30 +37,21 @@ namespace green_garden_server.Controllers
 
         // PUT: api/Lookups/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutLookup(int id, Lookup lookup)
+        [HttpPut("{lookupId}")]
+        public async Task<IActionResult> PutLookup(int lookupTypeId, int lookupId, Lookup lookup)
         {
-            if (id != lookup.Id)
+            if (lookupId != lookup.Id)
             {
                 return BadRequest();
             }
-
-            _context.Entry(lookup).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _lookupManager.UpdateAsync(lookupTypeId, lookup);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!LookupExists(id))
-                {
+
                     return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
             }
 
             return NoContent();
@@ -69,33 +60,20 @@ namespace green_garden_server.Controllers
         // POST: api/Lookups
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Lookup>> PostLookup(Lookup lookup)
+        public async Task<ActionResult<Lookup>> PostLookup(int lookupTypeId, Lookup lookup)
         {
-            _context.Lookups.Add(lookup);
-            await _context.SaveChangesAsync();
-
+            await _lookupManager.AddAsync(lookupTypeId, lookup);
+            
             return CreatedAtAction("GetLookup", new { id = lookup.Id }, lookup);
         }
 
         // DELETE: api/Lookups/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLookup(int id)
+        public async Task<IActionResult> DeleteLookup(int lookupTypeId, int lookupId)
         {
-            var lookup = await _context.Lookups.FindAsync(id);
-            if (lookup == null)
-            {
-                return NotFound();
-            }
-
-            _context.Lookups.Remove(lookup);
-            await _context.SaveChangesAsync();
+            await _lookupManager.DeleteAsync(lookupTypeId, lookupId);
 
             return NoContent();
-        }
-
-        private bool LookupExists(int id)
-        {
-            return _context.Lookups.Any(e => e.Id == id);
         }
     }
 }

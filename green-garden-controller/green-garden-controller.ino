@@ -3,25 +3,8 @@
 #include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 
-//#define veggie_controller
-#define green_garden_controller
-//#define green_garden_controller_backup
-
 unsigned long currentMillis;
-const char *ssid = "Barlow1977";
-const char *password = "BrynnVan";
 
-#ifdef veggie_controller
-const char *deviceId = "veggie-controller";
-#endif
-#ifdef green_garden_controller
-const char *deviceId = "green-garden-controller";
-#endif
-#ifdef green_garden_controller_backup
-const char *deviceId = "green-garden-controller-backup";
-#endif
-// const char *deviceId = "green-garden-controller";
-const String HOST_API = "https://192.168.86.36:32790/api/DeviceMessage";
 namespace timing
 {
   // 1 second
@@ -65,68 +48,48 @@ namespace timing
 
 } // namespace timing
 
-namespace pin
+namespace config
 {
+  const char *deviceId = "green-garden-controller";
+  const char *ssid = "Barlow1977";
+  const char *password = "BrynnVan";
+  const char fingerprint[] = "679db33f787f1ea853143b8ce01dd76296774bdd";
+
   const int light = 12;
   const int pump = 13;
   const int led = LED_BUILTIN;
-} // namespace pin
 
-#ifdef veggie_controller
-namespace config
-{
-  long pumpOnSeconds = timing::tenSeconds;
-  long pumpOffSeconds = timing::fiveMinutes;
-  long lightOnSeconds = timing::sixteenHours;
-  long lightOffSeconds = timing::eightHours;
-  long updateDelay = timing::fiveMinutes;
-  long pumpDelay = timing::oneSecond;
-} // namespace config
-#endif
+  String hostApi = "https://192.168.86.28:32790/api/DeviceMessage";
 
-#ifdef green_garden_controller
-namespace config
-{
   long pumpOnSeconds = timing::thirtySeconds;
   long pumpOffSeconds = timing::fourHours;
-  long lightOnSeconds = timing::eighteenHours;
-  long lightOffSeconds = timing::sixHours;
+  long lightOnSeconds = timing::sixteenHours;
+  long lightOffSeconds = timing::eightHours;
+
   long updateDelay = timing::fiveMinutes;
   long pumpDelay = timing::oneSecond;
-} // namespace config
-#endif
 
-#ifdef green_garden_controller_backup
-namespace config
-{
-  unsigned long pumpOnSeconds = timing::thirtySeconds;
-  unsigned long pumpOffSeconds = timing::fourHours;
-  unsigned long lightOnSeconds = timing::eighteenHours;
-  unsigned long lightOffSeconds = timing::sixHours;
-  unsigned long updateDelay = timing::fiveMinutes;
-  unsigned long pumpDelay = timing::oneSecond;
 } // namespace config
-#endif
 
 void setupLed()
 {
-  pinMode(pin::led, OUTPUT);
+  pinMode(config::led, OUTPUT);
 }
 
 void ledOn()
 {
-  digitalWrite(pin::led, LOW);
+  digitalWrite(config::led, LOW);
 }
 
 void ledOff()
 {
-  digitalWrite(pin::led, HIGH);
+  digitalWrite(config::led, HIGH);
 }
 
 void setupLight()
 {
-  sendMessage("update", "light", "Light is being initialized", "on");
-  pinMode(pin::light, OUTPUT);
+  pinMode(config::light, OUTPUT);
+  sendMessage("update", "light", "Light is being initialized", statusString(lightStatus()));
   // Always try to avoid duplicate code.
   // Instead of writing digitalWrite(pin, LOW) here,
   // call the function off() which already does that
@@ -135,20 +98,27 @@ void setupLight()
 
 bool lightStatus()
 {
-  return digitalRead(pin::light);
+  return digitalRead(config::light);
+}
+
+String statusString(bool status){
+  if(status){
+    return "on";
+  }
+  return "off";
 }
 
 void lightOn()
 {
-  digitalWrite(pin::light, HIGH);
-  //sendMessage("change", "light", "Light has been turned on", "on");
+  digitalWrite(config::light, HIGH);
+  sendMessage("change", "light", "Light has been turned on", statusString(lightStatus()));
   Serial.println("\nLight has been turned on\n");
 }
 
 void lightOff()
 {
-  digitalWrite(pin::light, LOW);
-  //sendMessage("change", "light", "Light has been turned off", "off");
+  digitalWrite(config::light, LOW);
+  sendMessage("change", "light", "Light has been turned off", statusString(lightStatus()));
   Serial.println("\nLight has been turned off\n");
 }
 
@@ -187,7 +157,7 @@ void checkLights()
     }
     else
     {
-      sendMessage("update", "light", "Light is currently on", "on");
+      sendMessage("update", "light", "Light is currently on", statusString(lightStatus()));
     }
   }
   else
@@ -201,15 +171,15 @@ void checkLights()
     }
     else
     {
-      sendMessage("update", "light", "Light is currently off", "off");
+      sendMessage("update", "light", "Light is currently off", statusString(lightStatus()));
     }
   }
 }
 
 void setupPump()
 {
-  sendMessage("update", "pump", "Pump is being initialized", "off");
-  pinMode(pin::pump, OUTPUT);
+  pinMode(config::pump, OUTPUT);
+  sendMessage("update", "pump", "Pump is being initialized", statusString(pumpStatus()));
   // Always try to avoid duplicate code.
   // Instead of writing digitalWrite(pin, LOW) here,
   // call the function off() which already does that
@@ -218,36 +188,20 @@ void setupPump()
 
 bool pumpStatus()
 {
-  return digitalRead(pin::pump);
+  return digitalRead(config::pump);
 }
 
 void pumpOn()
 {
-#ifdef green_garden_controller
-  digitalWrite(pin::pump, LOW);
-#endif
-#ifdef green_garden_controller_backup
-  digitalWrite(pin::pump, LOW);
-#endif
-#ifdef veggie_controller
-  digitalWrite(pin::pump, HIGH);
-#endif
-  sendMessage("change", "pump", "Pump has been turned on", "on");
+  digitalWrite(config::pump, HIGH);
+  sendMessage("update", "pump", "Pump turned on", statusString(pumpStatus()));
   Serial.println("Pump has been turned on");
 }
 
 void pumpOff()
 {
-#ifdef green_garden_controller
-  digitalWrite(pin::pump, HIGH);
-#endif
-#ifdef green_garden_controller_backup
-  digitalWrite(pin::pump, HIGH);
-#endif
-#ifdef veggie_controller
-  digitalWrite(pin::pump, LOW);
-#endif
-  sendMessage("change", "pump", "Pump has been turned off", "off");
+  digitalWrite(config::pump, LOW);
+  sendMessage("update", "pump", "Pump turned off", statusString(pumpStatus()));
   Serial.println("Pump has been turned off");
 }
 
@@ -264,7 +218,7 @@ void checkPump()
     }
     else
     {
-      sendMessage("update", "pump", "Pump is currently on", "on");
+      sendMessage("update", "pump", "Pump is currently on", statusString(pumpStatus()));
     }
   }
   // pump is off
@@ -277,7 +231,7 @@ void checkPump()
     }
     else
     {
-      sendMessage("update", "pump", "Pump is currently off", "off");
+      sendMessage("update", "pump", "Pump is currently off", statusString(pumpStatus()));
     }
   }
 }
@@ -288,7 +242,7 @@ void sendMessage(String eventType, String sensorType, String data, String action
   if ((WiFi.status() == WL_CONNECTED))
   {
     DynamicJsonDocument doc(2048);
-    doc["deviceId"] = deviceId;
+    doc["deviceId"] = config::deviceId;
     doc["eventType"] = eventType;
     doc["sensorType"] = sensorType;
     doc["actionType"] = actionType;
@@ -300,12 +254,11 @@ void sendMessage(String eventType, String sensorType, String data, String action
     WiFiClientSecure client; //Declare object of class WiFiClient
     HTTPClient http;
 
-    const char fingerprint[] = "679db33f787f1ea853143b8ce01dd76296774bdd";
-    client.setFingerprint(fingerprint);
+    client.setFingerprint(config::fingerprint);
     Serial.print("[HTTP] begin...\n");
     http.useHTTP10(true);
     // configure traged server and url
-    http.begin(client, HOST_API); //HTTP
+    http.begin(client, config::hostApi); //HTTP
 
     http.addHeader("Content-Type", "application/json");
 
@@ -378,17 +331,17 @@ void sendMessage(String eventType, String sensorType, String data, String action
           {
             int pumpOnSeconds = resultDoc["value"].as<int>() * timing::oneSecond;
             config::pumpOnSeconds = pumpOnSeconds;
-            Serial.print('Updating pump on seconds to: ');
+            Serial.print("Updating pump on seconds to: ");
             Serial.print(config::pumpOnSeconds);
-            Serial.print('\n');
+            Serial.print("\n");
           }
           if (actionType == "pumpoffseconds")
           {
             int pumpOffSeconds = resultDoc["value"].as<int>() * timing::oneSecond;
             config::pumpOffSeconds = pumpOffSeconds;
-            Serial.print('Updating pump off seconds to: ');
+            Serial.print("Updating pump off seconds to: ");
             Serial.print(config::pumpOffSeconds);
-            Serial.print('\n');
+            Serial.print("\n");
           }
         }
       }
@@ -404,7 +357,7 @@ void setup()
 {
 
   Serial.begin(115200);
-  WiFi.begin(ssid, password);
+  WiFi.begin(config::ssid, config::password);
 
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -443,17 +396,18 @@ void loop()
 
   currentMillis = millis();
   checkPump();
+  Serial.print("Pump Status: ");
+  Serial.print(pumpStatus());
+  Serial.print("\n");
   if (!pumpStatus())
   {
     ledOff();
-    Serial.print("Pump Status: False\n");
     checkLights();
     delay(config::updateDelay);
   }
   else
   {
     ledOn();
-    Serial.print("Pump Status: True\n");
     delay(config::pumpDelay);
   }
 }

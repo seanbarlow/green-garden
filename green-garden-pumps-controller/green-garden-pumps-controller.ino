@@ -21,8 +21,6 @@ namespace timing
   const long twentySeconds = oneSecond * 20;
   // thirty seconds
   const long thirtySeconds = oneSecond * 30;
-  // 50 sconds
-  const long fiftySeconds = thirtySeconds + twentySeconds;
   // one minute
   const long oneMinute = oneSecond * 60;
   // one minute
@@ -35,43 +33,46 @@ namespace timing
   const long fourHours = oneHour * 4;
   // 6 hours
   const long sixHours = oneHour * 6;
-  // 8 hours
-  const long eightHours = oneHour * 8;
-  // 12 hours
-  const long twelveHours = oneHour * 12;
+  // 6hours
+  const long eightHours = oneHour * 6;
   // 16 hours
   const long sixteenHours = oneHour * 16;
   // 18 hours
   const long eighteenHours = oneHour * 18;
   // pump start millis
-  unsigned long pumpMillis = 0;
-  // time since last change (light on/off)
-  unsigned long lightMillis = 0;
-  // Last run
-  unsigned long lastRun = 0;
+  unsigned long pump1Millis = 0;
+  unsigned long pump2Millis = 0;
 
 } // namespace timing
 
+#define d0 16
+#define d1 5
+#define d2 4
+#define d3 0
+#define d4 2
+#define d5 14
+#define d6 12
+#define d7 13
+#define d8 15
+
 namespace config
 {
-  const char *deviceId = "green-garden-controller";
+  const char *deviceId = "green-garden-pumps-controller";
   const char *ssid = "Barlow1977";
   const char *password = "BrynnVan";
   const char fingerprint[] = "679db33f787f1ea853143b8ce01dd76296774bdd";
 
-  const int light = 12;
-  const int pump = 13;
+  const int pump1 = d7;
+  const int pump2 = d6;
   const int led = LED_BUILTIN;
 
   String hostApi = "https://192.168.86.28:32790/api/DeviceMessage";
 
   long pumpOnSeconds = timing::thirtySeconds;
-  long pumpOffSeconds = timing::oneHour;
-  long lightOnSeconds = timing::sixteenHours;
-  long lightOffSeconds = timing::eightHours;
+  long pumpOffSeconds = timing::fourHours;
 
   long updateDelay = timing::fiveMinutes;
-  long pumpDelay = timing::oneSecond / 10;
+  long pumpDelay = timing::oneSecond;
 
 } // namespace config
 
@@ -89,153 +90,92 @@ void ledOff()
 {
   digitalWrite(config::led, HIGH);
 }
-
-void setupLight()
+String statusString(bool status)
 {
-  pinMode(config::light, OUTPUT);
-  sendMessage("update", "light", "Light is being initialized", statusString(lightStatus()));
-  // Always try to avoid duplicate code.
-  // Instead of writing digitalWrite(pin, LOW) here,
-  // call the function off() which already does that
-  lightOff();
-}
-
-bool lightStatus()
-{
-  return digitalRead(config::light);
-}
-
-String statusString(bool status){
-  if(status){
+  if (status)
+  {
     return "on";
   }
   return "off";
 }
 
-void lightOn()
+void setupPump(int pump)
 {
-  digitalWrite(config::light, HIGH);
-  sendMessage("change", "light", "Light has been turned on", statusString(lightStatus()));
-  Serial.println("\nLight has been turned on\n");
-}
-
-void lightOff()
-{
-  digitalWrite(config::light, LOW);
-  sendMessage("change", "light", "Light has been turned off", statusString(lightStatus()));
-  Serial.println("\nLight has been turned off\n");
-}
-
-void checkLights()
-{
-  Serial.print("Light Status: ");
-  Serial.print(lightStatus());
-  Serial.print("\n");
-  Serial.print("current :");
-  Serial.print(currentMillis);
-  Serial.print("\n");
-  Serial.print("on :");
-  Serial.print(config::lightOnSeconds);
-  Serial.print("\n");
-  Serial.print("on :");
-  Serial.print(config::lightOffSeconds);
-  Serial.print("\n");
-  Serial.print("light :");
-  Serial.print(timing::lightMillis);
-  Serial.print("\n");
-  // check to see if the light is on
-  Serial.print(currentMillis - timing::lightMillis >= config::lightOnSeconds);
-  Serial.print("\n");
-  Serial.print((currentMillis - timing::lightMillis) >= config::lightOffSeconds);
-  Serial.print("\n");
-  Serial.print(currentMillis - timing::lightMillis);
-  Serial.print("\n");
-  if (lightStatus())
-  {
-    if ((currentMillis - timing::lightMillis) >= config::lightOnSeconds)
-    {
-      Serial.print("Calling light off");
-      Serial.print("\n");
-      lightOff();
-      timing::lightMillis = currentMillis;
-    }
-    else
-    {
-      sendMessage("update", "light", "Light is currently on", statusString(lightStatus()));
-    }
-  }
-  else
-  {
-    if ((currentMillis - timing::lightMillis) >= config::lightOffSeconds)
-    {
-      Serial.print("Calling light on");
-      Serial.print("\n");
-      lightOn();
-      timing::lightMillis = currentMillis;
-    }
-    else
-    {
-      sendMessage("update", "light", "Light is currently off", statusString(lightStatus()));
-    }
-  }
-}
-
-void setupPump()
-{
-  pinMode(config::pump, OUTPUT);
-  sendMessage("update", "pump", "Pump is being initialized", statusString(pumpStatus()));
+  pinMode(pump, OUTPUT);
+  sendMessage("update", "pump", "Pump " + String(pump) + " is being initialized", statusString(pumpStatus(pump)));
   // Always try to avoid duplicate code.
   // Instead of writing digitalWrite(pin, LOW) here,
   // call the function off() which already does that
-  pumpOff();
+  pumpOff(pump);
 }
 
-bool pumpStatus()
+bool pumpStatus(int pump)
 {
-  return digitalRead(config::pump);
+  return digitalRead(pump);
 }
 
-void pumpOn()
+void pumpOn(int pump)
 {
-  digitalWrite(config::pump, HIGH);
-  sendMessage("update", "pump", "Pump turned on", statusString(pumpStatus()));
-  Serial.println("Pump has been turned on");
+  digitalWrite(pump, HIGH);
+  sendMessage("update", "pump", "Pump " + String(pump) + " turned on", statusString(pumpStatus(pump)));
+  Serial.println("Pump " + String(pump) + " has been turned on");
 }
 
-void pumpOff()
+void pumpOff(int pump)
 {
-  digitalWrite(config::pump, LOW);
-  sendMessage("update", "pump", "Pump turned off", statusString(pumpStatus()));
-  Serial.println("Pump has been turned off");
+  digitalWrite(pump, LOW);
+  sendMessage("update", "pump", "Pump " + String(pump) + " turned off", statusString(pumpStatus(pump)));
+  Serial.println("Pump " + String(pump) + " has been turned off");
 }
 
-void checkPump()
+void updatePumpMillis(int pump)
 {
+  if (pump == d6)
+  {
+    timing::pump1Millis = currentMillis;
+  }
+  else
+  {
+    timing::pump2Millis = currentMillis;
+  }
+}
+
+void checkPump(int pump)
+{
+  unsigned long pumpMillis;
+  if (pump == d6)
+  {
+    pumpMillis = timing::pump1Millis;
+  }
+  else
+  {
+    pumpMillis = timing::pump2Millis;
+  }
   // Pump is on
-  if (pumpStatus())
+  if (pumpStatus(pump))
   {
     // make sure the pump only runs for 4.5 minutes
-    if (currentMillis - timing::pumpMillis >= config::pumpOnSeconds)
+    if (currentMillis - pumpMillis >= config::pumpOnSeconds)
     {
-      pumpOff();
-      timing::pumpMillis = currentMillis;
+      pumpOff(pump);
+      updatePumpMillis(pump);
     }
     else
     {
-      sendMessage("update", "pump", "Pump is currently on", statusString(pumpStatus()));
+      sendMessage("update", "pump", "Pump " + String(pump) + " is currently on", statusString(pumpStatus(pump)));
     }
   }
   // pump is off
   else
   {
-    if (currentMillis - timing::pumpMillis >= config::pumpOffSeconds)
+    if (currentMillis - pumpMillis >= config::pumpOffSeconds)
     {
-      pumpOn();
-      timing::pumpMillis = currentMillis;
+      pumpOn(pump);
+      updatePumpMillis(pump);
     }
     else
     {
-      sendMessage("update", "pump", "Pump is currently off", statusString(pumpStatus()));
+      sendMessage("update", "pump", "Pump " + String(pump) + " is currently off", statusString(pumpStatus(pump)));
     }
   }
 }
@@ -296,40 +236,13 @@ void sendMessage(String eventType, String sensorType, String data, String action
         Serial.print("Action Type: ");
         Serial.print(actionType);
         Serial.print("\n");
-        if (sensorType == "light")
+        if (sensorType == "pump")
         {
           if (actionType == "on")
           {
-            lightOn();
-            timing::lightMillis = currentMillis;
-          }
-          else if (actionType == "off")
-          {
-            lightOff();
-            timing::lightMillis = currentMillis;
-          }
-          else if (actionType == "lightonseconds")
-          {
-            int lightOnSeconds = resultDoc["value"].as<int>() * timing::oneSecond;
-            config::lightOnSeconds = lightOnSeconds;
-          }
-          else if (actionType == "lightoffseconds")
-          {
-            int lightoffseconds = resultDoc["value"].as<int>() * timing::oneSecond;
-            config::lightOffSeconds = lightoffseconds;
-          }
-        }
-        else if (sensorType == "pump")
-        {
-          if (actionType == "on")
-          {
-            pumpOn();
-            timing::lightMillis = currentMillis;
           }
           if (actionType == "off")
           {
-            pumpOff();
-            timing::lightMillis = currentMillis;
           }
           if (actionType == "pumponseconds")
           {
@@ -371,25 +284,19 @@ void setup()
 
   Serial.println("Initializing..."); //Test the serial monitor
   setupLed();
-  setupLight();
-  lightOn();
-  setupPump();
-  pumpOn();
+  setupPump(config::pump1);
+  setupPump(config::pump2);
+  pumpOn(config::pump1);
+  pumpOn(config::pump2);
 }
 
 void loop()
 {
-  Serial.print("Light Status: ");
-  Serial.print(lightStatus());
+  Serial.print("Pump 1 Status: ");
+  Serial.print(pumpStatus(config::pump1));
   Serial.print("\n");
-  Serial.print("Light On Seconds: ");
-  Serial.print(config::lightOnSeconds);
-  Serial.print("\n");
-  Serial.print("Light Off Seconds: ");
-  Serial.print(config::lightOffSeconds);
-  Serial.print("\n");
-  Serial.print("Pump Status: ");
-  Serial.print(pumpStatus());
+  Serial.print("Pump 2 Status: ");
+  Serial.print(pumpStatus(config::pump2));
   Serial.print("\n");
   Serial.print("Pump On Seconds: ");
   Serial.print(config::pumpOnSeconds);
@@ -399,14 +306,11 @@ void loop()
   Serial.print("\n");
 
   currentMillis = millis();
-  checkPump();
-  Serial.print("Pump Status: ");
-  Serial.print(pumpStatus());
-  Serial.print("\n");
-  if (!pumpStatus())
+  checkPump(config::pump1);
+  checkPump(config::pump2);
+  if (!pumpStatus(config::pump1) && !pumpStatus(config::pump2))
   {
     ledOff();
-    checkLights();
     delay(config::updateDelay);
   }
   else

@@ -155,3 +155,5 @@ C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\obj\Debug\net5
 C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\obj\Debug\net5.0\green-garden-server.pdb
 C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\obj\Debug\net5.0\green-garden-server.genruntimeconfig.cache
 C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\bin\Debug\net5.0\appsettings.Production.json
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\bin\Debug\net5.0\Microsoft.Extensions.DependencyInjection.dll
+C:\Users\SeanBarlow\source\repos\green-garden\green-garden-server\bin\Debug\net5.0\System.Diagnostics.DiagnosticSource.dll

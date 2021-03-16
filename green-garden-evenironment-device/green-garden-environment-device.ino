@@ -5,6 +5,16 @@
 #include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 
+#define d0 16
+#define d1 5
+#define d2 4
+#define d3 0
+#define d4 2
+#define d5 14
+#define d6 12
+#define d7 13
+#define d8 15
+
 DHTesp dht;
 
 namespace config
@@ -12,7 +22,7 @@ namespace config
   const char *ssid = "Barlow1977";
   const char *password = "BrynnVan";
   const char fingerprint[] = "679db33f787f1ea853143b8ce01dd76296774bdd";
-  const char *deviceId = "green-garden-environment-device";
+  const char *deviceId = "green-garden-environment-ground-device";
   const String HOST_API = "https://192.168.86.28:32790/api/DeviceMessage";
 } // namespace config
 
@@ -20,7 +30,7 @@ float Tc, Tf, RH, analogVolt;
 
 namespace pin
 {
-  const int dht22 = 12;
+  const int dht22 = d7;
   const int led = LED_BUILTIN;
 } // namespace pin
 
@@ -127,7 +137,6 @@ void loop()
     float t = dht.getTemperature();
     // Read temperature as Fahrenheit (isFahrenheit = true)
     float f = dht.toFahrenheit(t);
-
     // Check if any reads failed and exit early (to try again).
     if (isnan(h) || isnan(t) || isnan(f))
     {

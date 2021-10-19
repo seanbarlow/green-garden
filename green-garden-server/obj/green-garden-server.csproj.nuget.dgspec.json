@@ -1,31 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\SeanBarlow\\source\\repos\\green-garden\\green-garden-server\\green-garden-server.csproj": {}
+    "/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-server/green-garden-server.csproj": {}
   },
   "projects": {
-    "C:\\Users\\SeanBarlow\\source\\repos\\green-garden\\green-garden-server\\green-garden-server.csproj": {
+    "/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-server/green-garden-server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\SeanBarlow\\source\\repos\\green-garden\\green-garden-server\\green-garden-server.csproj",
+        "projectUniqueName": "/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-server/green-garden-server.csproj",
         "projectName": "green-garden-server",
-        "projectPath": "C:\\Users\\SeanBarlow\\source\\repos\\green-garden\\green-garden-server\\green-garden-server.csproj",
-        "packagesPath": "C:\\Users\\SeanBarlow\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\SeanBarlow\\source\\repos\\green-garden\\green-garden-server\\obj\\",
+        "projectPath": "/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-server/green-garden-server.csproj",
+        "packagesPath": "/Users/seanbarlow/.nuget/packages/",
+        "outputPath": "/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-server/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\SeanBarlow\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "/Users/seanbarlow/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -113,7 +107,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.103\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/5.0.201/RuntimeIdentifierGraph.json"
         }
       }
     }

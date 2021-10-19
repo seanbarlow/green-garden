@@ -55,7 +55,7 @@ namespace timing
 namespace config
 {
   const char *deviceId = "green-garden-controller";
-  const char *ssid = "Barlow1977";
+  const char *ssid = "SlowWiFi";
   const char *password = "BrynnVan";
   const char fingerprint[] = "679db33f787f1ea853143b8ce01dd76296774bdd";
 
@@ -105,8 +105,10 @@ bool lightStatus()
   return digitalRead(config::light);
 }
 
-String statusString(bool status){
-  if(status){
+String statusString(bool status)
+{
+  if (status)
+  {
     return "on";
   }
   return "off";

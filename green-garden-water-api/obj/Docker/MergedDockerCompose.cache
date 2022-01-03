@@ -1,0 +1,30 @@
+services:
+  green-garden-water-api:
+    build:
+      context: /Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api
+      dockerfile: ./Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+    image: greengardenwaterapi
+    ports:
+    - target: 80
+    - target: 443
+    - published: 51000
+      target: 50001
+    volumes:
+    - /Users/seanbarlow/.aspnet/https:/root/.aspnet/https:ro
+    - /Users/seanbarlow/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+  green-garden-water-api-dapr:
+    command:
+    - ./daprd
+    - -app-id
+    - green-garden-water-api
+    - -app-port
+    - '80'
+    depends_on:
+      green-garden-water-api:
+        condition: service_started
+    image: daprio/daprd:latest
+    network_mode: service:green-garden-water-api
+version: '3.4'

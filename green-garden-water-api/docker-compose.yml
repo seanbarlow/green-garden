@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  green-garden-water-api:
+    image: ${DOCKER_REGISTRY-}greengardenwaterapi
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "51000:50001"
+
+  green-garden-water-api-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "green-garden-water-api", "-app-port", "80" ]
+    depends_on:
+      - green-garden-water-api
+    network_mode: "service:green-garden-water-api"

@@ -1,0 +1,35 @@
+﻿<Properties StartupConfiguration="{A0A8670A-2F36-4A86-A1E3-6EBB35182263}|Default">
+  <MonoDevelop.Ide.ItemProperties.green-garden-water-api PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Controllers/WaterController.cs">
+    <Files>
+      <File FileName="Controllers/WaterController.cs" Line="31" Column="60" />
+      <File FileName="Repositories/WaterRepository.cs" Line="40" Column="1" />
+      <File FileName="GolbalUsings.cs" Line="15" Column="26" />
+      <File FileName="models/WaterEvent.cs" Line="6" Column="2" />
+      <File FileName="models/WaterStatus.cs" Line="6" Column="2" />
+      <File FileName="Program.cs" Line="23" Column="27" />
+      <File FileName="docker-compose.yml" Line="18" Column="1" />
+      <File FileName="Dockerfile" Line="16" Column="22" />
+      <File FileName="ProgramExtensions.cs" Line="17" Column="2" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="green-garden-water-api" expanded="True">
+            <Node name="docker-compose" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.docker-compose PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

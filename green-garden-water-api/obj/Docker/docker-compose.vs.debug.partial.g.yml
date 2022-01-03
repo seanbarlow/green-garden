@@ -1,0 +1,28 @@
+version: '3.4'
+
+services:
+  green-garden-water-api:
+    image: greengardenwaterapi:dev
+    container_name: green-garden-water-api
+    build:
+      target: base
+      labels:
+        com.microsoft.created-by: "visual-studio"
+        com.microsoft.visual-studio.project-name: "green-garden-water-api"
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
+      - NUGET_FALLBACK_PACKAGES=
+    volumes:
+      - /Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api:/app
+      - /Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api:/src
+      - /Users/seanbarlow/vsdbg/vs2017u5:/remote_debugger:rw
+      - /Users/seanbarlow/.nuget/packages/:/root/.nuget/packages:ro
+
+    entrypoint: tail -f /dev/null
+    labels:
+      com.microsoft.visualstudio.debuggee.program: "dotnet"
+      com.microsoft.visualstudio.debuggee.arguments: " --additionalProbingPath /root/.nuget/packages  \"/app/bin/Debug/net6.0/green-garden-water-api.dll\""
+      com.microsoft.visualstudio.debuggee.workingdirectory: "/app"
+      com.microsoft.visualstudio.debuggee.killprogram: "/bin/sh -c \"if PID=$$(pidof dotnet); then kill $$PID; fi\""
+    tty: true

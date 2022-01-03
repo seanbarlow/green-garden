@@ -43,6 +43,8 @@ namespace timing
   const long sixteenHours = oneHour * 16;
   // 18 hours
   const long eighteenHours = oneHour * 18;
+  // 20 hours
+  const long twentyHours = oneHour * 20;
   // pump start millis
   unsigned long pumpMillis = 0;
   // time since last change (light on/off)
@@ -65,8 +67,8 @@ namespace config
 
   String hostApi = "https://192.168.86.28:32790/api/DeviceMessage";
 
-  long pumpOnSeconds = timing::thirtySeconds;
-  long pumpOffSeconds = timing::oneHour;
+  long pumpOnSeconds = timing::fifteenSeconds;
+  long pumpOffSeconds = timing::twentyHours;
   long lightOnSeconds = timing::sixteenHours;
   long lightOffSeconds = timing::eightHours;
 

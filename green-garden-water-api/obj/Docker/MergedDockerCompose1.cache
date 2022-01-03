@@ -1,0 +1,50 @@
+services:
+  green-garden-water-api:
+    build:
+      context: /Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api
+      dockerfile: ./Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: green-garden-water-api
+      target: base
+    container_name: green-garden-water-api
+    entrypoint: tail -f /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      DOTNET_USE_POLLING_FILE_WATCHER: '1'
+      NUGET_FALLBACK_PACKAGES: ''
+    image: greengardenwaterapi:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages  "/app/bin/Debug/net6.0/green-garden-water-api.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof
+        dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    ports:
+    - target: 80
+    - target: 443
+    - published: 51000
+      target: 50001
+    tty: true
+    volumes:
+    - /Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api:/app:rw
+    - /Users/seanbarlow/vsdbg/vs2017u5:/remote_debugger:rw
+    - /Users/seanbarlow/.aspnet/https:/root/.aspnet/https:ro
+    - /Users/seanbarlow/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+    - /Users/seanbarlow/.nuget/packages:/root/.nuget/packages:ro
+    - /Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api:/src:rw
+  green-garden-water-api-dapr:
+    command:
+    - ./daprd
+    - -app-id
+    - green-garden-water-api
+    - -app-port
+    - '80'
+    depends_on:
+      green-garden-water-api:
+        condition: service_started
+    image: daprio/daprd:latest
+    network_mode: service:green-garden-water-api
+version: '3.4'

@@ -1,0 +1,16 @@
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/bin/Debug/green-garden-water-api.deps.json
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/bin/Debug/green-garden-water-api.runtimeconfig.json
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/bin/Debug/appsettings.Development.json
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/bin/Debug/appsettings.json
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/bin/Debug/green-garden-water-api
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/bin/Debug/green-garden-water-api.dll
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/bin/Debug/Dapr.Client.dll
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/bin/Debug/Dapr.AspNetCore.dll
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/bin/Debug/Google.Protobuf.dll
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/bin/Debug/Grpc.Core.Api.dll
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/bin/Debug/Grpc.Net.Client.dll
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/bin/Debug/Grpc.Net.Common.dll
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/bin/Debug/green-garden-water-api.pdb
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/obj/Debug/docker-compose.dcproj.AssemblyReference.cache
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/obj/Debug/docker-compose.dcproj.CoreCompileInputs.cache
+/Users/seanbarlow/Documents/GitHub/green-garden/green-garden-water-api/obj/Debug/docker-compose.dcproj.CopyComplete

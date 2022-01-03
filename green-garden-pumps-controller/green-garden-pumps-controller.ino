@@ -1,6 +1,4 @@
-#include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
-#include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 
 unsigned long currentMillis;
@@ -68,10 +66,12 @@ namespace config
 
   String hostApi = "https://192.168.86.28:32790/api/DeviceMessage";
 
-  long pumpOnSeconds = timing::thirtySeconds;
-  long pumpOffSeconds = timing::fourHours;
-
-  long updateDelay = timing::fiveMinutes;
+  long pump1OnSeconds = timing::sixHours;
+  long pump1OffSeconds = timing::thirtySeconds;
+  long pump2OnSeconds = timing::sixteenHours;
+  long pump2OffSeconds = timing::thirtySeconds;
+  
+  long updateDelay = timing::thirtySeconds;
   long pumpDelay = timing::oneSecond;
 
 } // namespace config
@@ -99,10 +99,24 @@ String statusString(bool status)
   return "off";
 }
 
+void pumpOn(int pump)
+{
+  digitalWrite(pump, HIGH);
+  // sendMessage("update", "pump", "Pump " + String(pump) + " turned on", statusString(pumpStatus(pump)));
+  Serial.println("Pump " + String(pump) + " has been turned on");
+}
+
+void pumpOff(int pump)
+{
+  digitalWrite(pump, LOW);
+  // sendMessage("update", "pump", "Pump " + String(pump) + " turned off", statusString(pumpStatus(pump)));
+  Serial.println("Pump " + String(pump) + " has been turned off");
+}
+
 void setupPump(int pump)
 {
   pinMode(pump, OUTPUT);
-  sendMessage("update", "pump", "Pump " + String(pump) + " is being initialized", statusString(pumpStatus(pump)));
+  // sendMessage("update", "pump", "Pump " + String(pump) + " is being initialized", statusString(pumpStatus(pump)));
   // Always try to avoid duplicate code.
   // Instead of writing digitalWrite(pin, LOW) here,
   // call the function off() which already does that
@@ -112,20 +126,6 @@ void setupPump(int pump)
 bool pumpStatus(int pump)
 {
   return digitalRead(pump);
-}
-
-void pumpOn(int pump)
-{
-  digitalWrite(pump, HIGH);
-  sendMessage("update", "pump", "Pump " + String(pump) + " turned on", statusString(pumpStatus(pump)));
-  Serial.println("Pump " + String(pump) + " has been turned on");
-}
-
-void pumpOff(int pump)
-{
-  digitalWrite(pump, LOW);
-  sendMessage("update", "pump", "Pump " + String(pump) + " turned off", statusString(pumpStatus(pump)));
-  Serial.println("Pump " + String(pump) + " has been turned off");
 }
 
 void updatePumpMillis(int pump)
@@ -143,144 +143,150 @@ void updatePumpMillis(int pump)
 void checkPump(int pump)
 {
   unsigned long pumpMillis;
+  unsigned long pumpOnSeconds;
+  unsigned long pumpOffSeconds;
   if (pump == d6)
   {
     pumpMillis = timing::pump1Millis;
+    pumpOnSeconds = config::pump1OnSeconds;
+    pumpOffSeconds = config::pump1OffSeconds;
   }
   else
   {
     pumpMillis = timing::pump2Millis;
+    pumpOnSeconds = config::pump2OnSeconds;
+    pumpOffSeconds = config::pump2OffSeconds;
   }
   // Pump is on
   if (pumpStatus(pump))
   {
     // make sure the pump only runs for 4.5 minutes
-    if (currentMillis - pumpMillis >= config::pumpOnSeconds)
+    if (currentMillis - pumpMillis >= pumpOnSeconds)
     {
       pumpOff(pump);
       updatePumpMillis(pump);
     }
     else
     {
-      sendMessage("update", "pump", "Pump " + String(pump) + " is currently on", statusString(pumpStatus(pump)));
+      // sendMessage("update", "pump", "Pump " + String(pump) + " is currently on", statusString(pumpStatus(pump)));
     }
   }
   // pump is off
   else
   {
-    if (currentMillis - pumpMillis >= config::pumpOffSeconds)
+    if (currentMillis - pumpMillis >= pumpOffSeconds)
     {
       pumpOn(pump);
       updatePumpMillis(pump);
     }
     else
     {
-      sendMessage("update", "pump", "Pump " + String(pump) + " is currently off", statusString(pumpStatus(pump)));
+      // sendMessage("update", "pump", "Pump " + String(pump) + " is currently off", statusString(pumpStatus(pump)));
     }
   }
 }
 
-void sendMessage(String eventType, String sensorType, String data, String actionType)
-{
-  // wait for WiFi connection
-  if ((WiFi.status() == WL_CONNECTED))
-  {
-    DynamicJsonDocument doc(2048);
-    doc["deviceId"] = config::deviceId;
-    doc["eventType"] = eventType;
-    doc["sensorType"] = sensorType;
-    doc["actionType"] = actionType;
-    doc["data"] = data;
-
-    String json;
-    serializeJson(doc, json);
-
-    WiFiClientSecure client; //Declare object of class WiFiClient
-    HTTPClient http;
-
-    client.setFingerprint(config::fingerprint);
-    Serial.print("[HTTP] begin...\n");
-    http.useHTTP10(true);
-    // configure traged server and url
-    http.begin(client, config::hostApi); //HTTP
-
-    http.addHeader("Content-Type", "application/json");
-
-    Serial.print("[HTTP] POST BEGIN...\n");
-    Serial.print(json);
-    Serial.print("\n");
-    // start connection and send HTTP header and body
-    int httpCode = http.POST(json);
-    Serial.printf("[HTTP] POST... code: %d\n", httpCode);
-    Serial.print("[HTTP] POST END\n");
-    // file found at server
-    if (httpCode == HTTP_CODE_OK)
-    {
-      DynamicJsonDocument resultDoc(2048);
-      Serial.print("[HTTP] RESPONSE BEGIN\n");
-      deserializeJson(resultDoc, http.getStream());
-      String output;
-      serializeJson(resultDoc, output);
-      Serial.print(output);
-      Serial.print("\n");
-      Serial.print("[HTTP] RESPONSE END\n");
-      http.end();
-      bool action = resultDoc["action"].as<bool>();
-      if (action)
-      {
-        String sensorType = resultDoc["sensorType"].as<String>();
-        Serial.print("Sensor Type: ");
-        Serial.print(sensorType);
-        Serial.print("\n");
-        String actionType = resultDoc["actionType"].as<String>();
-        Serial.print("Action Type: ");
-        Serial.print(actionType);
-        Serial.print("\n");
-        if (sensorType == "pump")
-        {
-          if (actionType == "on")
-          {
-          }
-          if (actionType == "off")
-          {
-          }
-          if (actionType == "pumponseconds")
-          {
-            int pumpOnSeconds = resultDoc["value"].as<int>() * timing::oneSecond;
-            config::pumpOnSeconds = pumpOnSeconds;
-            Serial.print("Updating pump on seconds to: ");
-            Serial.print(config::pumpOnSeconds);
-            Serial.print("\n");
-          }
-          if (actionType == "pumpoffseconds")
-          {
-            int pumpOffSeconds = resultDoc["value"].as<int>() * timing::oneSecond;
-            config::pumpOffSeconds = pumpOffSeconds;
-            Serial.print("Updating pump off seconds to: ");
-            Serial.print(config::pumpOffSeconds);
-            Serial.print("\n");
-          }
-        }
-      }
-    }
-    else
-    {
-      Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
-    }
-  }
-}
+//void sendMessage(String eventType, String sensorType, String data, String actionType)
+//{
+//  // wait for WiFi connection
+//  if ((WiFi.status() == WL_CONNECTED))
+//  {
+//    DynamicJsonDocument doc(2048);
+//    doc["deviceId"] = config::deviceId;
+//    doc["eventType"] = eventType;
+//    doc["sensorType"] = sensorType;
+//    doc["actionType"] = actionType;
+//    doc["data"] = data;
+//
+//    String json;
+//    serializeJson(doc, json);
+//
+//    WiFiClientSecure client; //Declare object of class WiFiClient
+//    HTTPClient http;
+//
+//    client.setFingerprint(config::fingerprint);
+//    Serial.print("[HTTP] begin...\n");
+//    http.useHTTP10(true);
+//    // configure traged server and url
+//    http.begin(client, config::hostApi); //HTTP
+//
+//    http.addHeader("Content-Type", "application/json");
+//
+//    Serial.print("[HTTP] POST BEGIN...\n");
+//    Serial.print(json);
+//    Serial.print("\n");
+//    // start connection and send HTTP header and body
+//    int httpCode = http.POST(json);
+//    Serial.printf("[HTTP] POST... code: %d\n", httpCode);
+//    Serial.print("[HTTP] POST END\n");
+//    // file found at server
+//    if (httpCode == HTTP_CODE_OK)
+//    {
+//      DynamicJsonDocument resultDoc(2048);
+//      Serial.print("[HTTP] RESPONSE BEGIN\n");
+//      deserializeJson(resultDoc, http.getStream());
+//      String output;
+//      serializeJson(resultDoc, output);
+//      Serial.print(output);
+//      Serial.print("\n");
+//      Serial.print("[HTTP] RESPONSE END\n");
+//      http.end();
+//      bool action = resultDoc["action"].as<bool>();
+//      if (action)
+//      {
+//        String sensorType = resultDoc["sensorType"].as<String>();
+//        Serial.print("Sensor Type: ");
+//        Serial.print(sensorType);
+//        Serial.print("\n");
+//        String actionType = resultDoc["actionType"].as<String>();
+//        Serial.print("Action Type: ");
+//        Serial.print(actionType);
+//        Serial.print("\n");
+//        if (sensorType == "pump")
+//        {
+//          if (actionType == "on")
+//          {
+//          }
+//          if (actionType == "off")
+//          {
+//          }
+//          if (actionType == "pumponseconds")
+//          {
+//            int pumpOnSeconds = resultDoc["value"].as<int>() * timing::oneSecond;
+//            config::pumpOnSeconds = pumpOnSeconds;
+//            Serial.print("Updating pump on seconds to: ");
+//            Serial.print(config::pumpOnSeconds);
+//            Serial.print("\n");
+//          }
+//          if (actionType == "pumpoffseconds")
+//          {
+//            int pumpOffSeconds = resultDoc["value"].as<int>() * timing::oneSecond;
+//            config::pumpOffSeconds = pumpOffSeconds;
+//            Serial.print("Updating pump off seconds to: ");
+//            Serial.print(config::pumpOffSeconds);
+//            Serial.print("\n");
+//          }
+//        }
+//      }
+//    }
+//    else
+//    {
+//      Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
+//    }
+//  }
+//}
 
 void setup()
 {
 
   Serial.begin(115200);
-  WiFi.begin(config::ssid, config::password);
-
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(1000);
-    Serial.println("Connecting...");
-  }
+//  WiFi.begin(config::ssid, config::password);
+//
+//  while (WiFi.status() != WL_CONNECTED)
+//  {
+//    delay(1000);
+//    Serial.println("Connecting...");
+//  }
 
   Serial.println("Initializing..."); //Test the serial monitor
   setupLed();
@@ -299,10 +305,10 @@ void loop()
   Serial.print(pumpStatus(config::pump2));
   Serial.print("\n");
   Serial.print("Pump On Seconds: ");
-  Serial.print(config::pumpOnSeconds);
+  //Serial.print(config::pumpOnSeconds);
   Serial.print("\n");
   Serial.print("Pump Off Seconds: ");
-  Serial.print(config::pumpOffSeconds);
+  //Serial.print(config::pumpOffSeconds);
   Serial.print("\n");
 
   currentMillis = millis();

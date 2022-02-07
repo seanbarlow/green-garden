@@ -1,7 +1,4 @@
 
-#include <ESP8266HTTPClient.h>
-#include <ArduinoJson.h>
-
 unsigned long currentMillis;
 
 namespace timing
